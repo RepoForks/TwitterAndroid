@@ -146,6 +146,22 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             tweetView.tweetHeartCount.setText("");
         }
 
+        if(tweet.getEntities().getMedia() != null){
+            Entities.MediaEntity mediaEntity = null;
+            for(Entities.MediaEntity entity : tweet.getEntities().getMedia()){
+                if(entity.getType().equals("photo")){
+                    mediaEntity = entity;
+                    break;
+                }
+            }
+            if(mediaEntity != null){
+                tweetView.imgTweet.setVisibility(View.VISIBLE);
+                Picasso.with(context)
+                        .load(mediaEntity.getMedia_url())
+                        .into(tweetView.imgTweet);
+            } else tweetView.imgTweet.setVisibility(View.GONE);
+        } else tweetView.imgTweet.setVisibility(View.GONE);
+
         tweetView.btnTweetReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -243,6 +259,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         @Bind(R.id.btn_tweet_menu)       ImageView btnTweetMenu;
         @Bind(R.id.tweet_ic_retweeted)   ImageView icRetweeted;
         @Bind(R.id.tweet_name_retweeted) TextView tweetRetweetedName;
+        @Bind(R.id.tweet_img)            ImageView imgTweet;
 
         public TweetViewHolder(View view) {
             super(view);

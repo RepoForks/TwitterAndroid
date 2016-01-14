@@ -92,6 +92,14 @@
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="2dp"
                 android:text="Deze was wel een tweet waard. Interessante en toffe presentatie! #ticonfdays2015" />
+
+            <ImageView
+                android:id="@+id/tweet_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tweet_body"
+                android:layout_below="@+id/tweet_body"
+                android:adjustViewBounds="true" />
         </RelativeLayout>
 
         <LinearLayout
@@ -117,15 +125,15 @@
                 android:id="@+id/btn_tweet_retweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="-5dp"
                 android:layout_weight="0.45"
                 android:background="@drawable/ripple"
                 android:clickable="true"
-                android:orientation="horizontal"
-                android:layout_marginLeft="-5dp">
+                android:orientation="horizontal">
 
                 <Space
                     android:layout_width="57dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <ImageView
                     android:id="@+id/ic_tweet_retweet"
@@ -151,15 +159,15 @@
                 android:id="@+id/btn_tweet_heart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="-36dp"
                 android:layout_weight="0.45"
                 android:background="@drawable/ripple"
                 android:clickable="true"
-                android:orientation="horizontal"
-                android:layout_marginLeft="-36dp">
+                android:orientation="horizontal">
 
                 <Space
                     android:layout_width="57dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <ImageView
                     android:id="@+id/ic_tweet_heart"
@@ -185,8 +193,8 @@
                 android:id="@+id/btn_tweet_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple"
                 android:layout_weight="1"
+                android:background="@drawable/ripple"
                 android:paddingBottom="3dp"
                 android:paddingTop="2dp"
                 android:src="@drawable/ic_dots_vertical" />
