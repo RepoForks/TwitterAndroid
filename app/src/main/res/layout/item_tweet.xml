@@ -61,6 +61,7 @@
                 android:layout_marginTop="-5dp"
                 android:layout_toRightOf="@+id/tweet_profile_pic"
                 android:text="Maarten"
+                android:textColor="#555"
                 android:textStyle="bold" />
 
             <TextView
@@ -106,38 +107,86 @@
                 android:id="@+id/btn_tweet_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"
+                android:layout_weight="2"
+                android:background="@drawable/ripple"
                 android:paddingBottom="3dp"
                 android:paddingTop="2dp"
                 android:src="@drawable/ic_reply" />
 
-            <ImageView
+            <LinearLayout
                 android:id="@+id/btn_tweet_retweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingBottom="3dp"
-                android:paddingTop="2dp"
-                android:src="@drawable/ic_retweet" />
+                android:layout_weight="0.45"
+                android:background="@drawable/ripple"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:layout_marginLeft="-5dp">
 
-            <ImageView
+                <Space
+                    android:layout_width="57dp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:id="@+id/ic_tweet_retweet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_retweet" />
+
+                <TextView
+                    android:id="@+id/tweet_retweet_count"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text=""
+                    android:textColor="#999"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btn_tweet_heart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingBottom="3dp"
-                android:paddingTop="2dp"
-                android:src="@drawable/ic_heart" />
+                android:layout_weight="0.45"
+                android:background="@drawable/ripple"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:layout_marginLeft="-36dp">
+
+                <Space
+                    android:layout_width="57dp"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:id="@+id/ic_tweet_heart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="3dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_heart" />
+
+                <TextView
+                    android:id="@+id/tweet_heart_count"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text=""
+                    android:textColor="#999"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/btn_tweet_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/ripple"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"
                 android:paddingBottom="3dp"
                 android:paddingTop="2dp"
                 android:src="@drawable/ic_dots_vertical" />

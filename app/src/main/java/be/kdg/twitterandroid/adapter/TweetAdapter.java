@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -96,8 +97,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                     .into(tweetView.tweetProfilePic);
         }
 
-        SpannableString tweetBody = new SpannableString(tweet.getText());
-        for(Entities.HashTagEntity hashtag : tweet.getEntities().getHashtags()){
+        Tweet displayedTweet = (tweet.getRetweeted_status() == null) ? tweet : tweet.getRetweeted_status();
+        SpannableString tweetBody = new SpannableString(displayedTweet.getText());
+        for(Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
             tweetBody.setSpan(
                     new ForegroundColorSpan(Color.argb(255, 50, 50, 50)),
                     hashtag.getIndices()[0] + 1,
@@ -105,7 +107,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                     0
             );
         }
-        for(final Entities.UrlEntity url : tweet.getEntities().getUrls()){
+        for(Entities.UserMentionsEntity userMention : displayedTweet.getEntities().getUser_mentions()){
+            tweetBody.setSpan(
+                    new ForegroundColorSpan(Color.argb(255, 50, 50, 50)),
+                    userMention.getIndices()[0] + 1,
+                    userMention.getIndices()[1],
+                    0
+            );
+        }
+        for(final Entities.UrlEntity url : displayedTweet.getEntities().getUrls()){
             tweetBody.setSpan(
                     new ClickableSpan() {
                         @Override
@@ -123,6 +133,18 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         tweetView.tweetBody.setText(tweetBody);
 
         tweetView.tweetTimestamp.setText(getSimpleDateString(tweet.getCreated_at()));
+
+        if(tweet.getRetweet_count() > 0){
+            tweetView.tweetRetweetCount.setText(String.valueOf(tweet.getRetweet_count()));
+        } else {
+            tweetView.tweetRetweetCount.setText("");
+        }
+
+        if(tweet.getFavorite_count() > 0){
+            tweetView.tweetHeartCount.setText(String.valueOf(tweet.getFavorite_count()));
+        } else {
+            tweetView.tweetHeartCount.setText("");
+        }
 
         tweetView.btnTweetReply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,8 +236,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         @Bind(R.id.tweet_body)           TextView tweetBody;
         @Bind(R.id.tweet_profile_pic)    ImageView tweetProfilePic;
         @Bind(R.id.btn_tweet_reply)      ImageView btnTweetReply;
-        @Bind(R.id.btn_tweet_retweet)    ImageView btnTweetRetweet;
-        @Bind(R.id.btn_tweet_heart)      ImageView btnTweetHeart;
+        @Bind(R.id.btn_tweet_retweet)    LinearLayout btnTweetRetweet;
+        @Bind(R.id.tweet_retweet_count)  TextView tweetRetweetCount;
+        @Bind(R.id.btn_tweet_heart)      LinearLayout btnTweetHeart;
+        @Bind(R.id.tweet_heart_count)    TextView tweetHeartCount;
         @Bind(R.id.btn_tweet_menu)       ImageView btnTweetMenu;
         @Bind(R.id.tweet_ic_retweeted)   ImageView icRetweeted;
         @Bind(R.id.tweet_name_retweeted) TextView tweetRetweetedName;

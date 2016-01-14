@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void failure(RetrofitError error) {
-                Snackbar.make(listTweets, error.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(listTweets, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
