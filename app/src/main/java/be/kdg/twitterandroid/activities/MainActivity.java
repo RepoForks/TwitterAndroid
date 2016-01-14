@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,10 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
+import be.kdg.twitterandroid.activities.listeners.EndlessRecyclerOnScrollListener;
 import be.kdg.twitterandroid.adapter.TweetAdapter;
 import be.kdg.twitterandroid.api.TweetModule;
 import be.kdg.twitterandroid.api.TweetService;
 import be.kdg.twitterandroid.domain.Tweet;
+import be.kdg.twitterandroid.domain.User;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Bind(R.id.drawer_layout) DrawerLayout drawer;
     @Bind(R.id.nav_view)      NavigationView navigationView;
     @Bind(R.id.list_tweets)   RecyclerView listTweets;
+    @Bind(R.id.swiperefresh_tweets) SwipeRefreshLayout swipeRefreshLayout;
 
     private static final int REQ_AUTH = 0;
 
@@ -81,22 +85,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tweetService = module.getTweetService();
             refreshTweets();
         }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTweets();
+            }
+        });
     }
 
     public void refreshTweets(){
+        swipeRefreshLayout.setRefreshing(true);
         tweetService.getHomeTimeline(20, null, new Callback<List<Tweet>>() {
             @Override
             public void success(List<Tweet> tweets, Response response) {
                 MainActivity.this.tweets.clear();
                 MainActivity.this.tweets.addAll(tweets);
                 MainActivity.this.tweetAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 Snackbar.make(listTweets, error.getMessage(), Snackbar.LENGTH_LONG).show();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshTweets();
     }
 
     public void loadMoreTweets(){
@@ -109,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void failure(RetrofitError error) {
-                Snackbar.make(listTweets, error.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(listTweets, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -173,21 +193,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onTweetReplyClick(Tweet tweet) {
-
+        Snackbar.make(listTweets, tweet.getId() + " reply", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onTweetRetweetClick(Tweet tweet) {
-
+        Snackbar.make(listTweets, tweet.getId() + " retweet", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onTweetHeartClick(Tweet tweet) {
-
+        Snackbar.make(listTweets, tweet.getId() + " heart", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onTweetMenuClick(Tweet tweet) {
+        Snackbar.make(listTweets, tweet.getId() + " menu", Snackbar.LENGTH_SHORT).show();
+    }
 
+    @Override
+    public void onUserClick(User user) {
+        Snackbar.make(listTweets, user.getName() + " clicked", Snackbar.LENGTH_SHORT).show();
     }
 }

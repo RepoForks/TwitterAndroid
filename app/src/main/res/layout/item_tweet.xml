@@ -5,19 +5,19 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginTop="3dp"
-        android:layout_marginBottom="6dp"
         android:background="@drawable/material_card"
-        android:paddingTop="9dp"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        android:paddingBottom="6dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="6dp"
-        android:elevation="1dp">
+        android:paddingTop="9dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,11 +27,11 @@
                 android:id="@+id/tweet_ic_retweeted"
                 android:layout_width="20dp"
                 android:layout_height="15dp"
-                android:src="@drawable/ic_retweeted"
                 android:layout_alignRight="@+id/tweet_profile_pic"
-                android:visibility="visible"
                 android:layout_marginBottom="8dp"
-                android:paddingTop="3dp"/>
+                android:paddingTop="3dp"
+                android:src="@drawable/ic_retweeted"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/tweet_name_retweeted"
@@ -41,16 +41,16 @@
                 android:layout_alignTop="@+id/tweet_ic_retweeted"
                 android:layout_marginTop="-1dp"
                 android:text="Ignace retweeted"
-                android:textColor="#999"/>
+                android:textColor="#999" />
 
             <ImageView
-                android:layout_below="@+id/tweet_ic_retweeted"
                 android:id="@+id/tweet_profile_pic"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_below="@+id/tweet_ic_retweeted"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="3dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
 
             <TextView
                 android:id="@+id/tweet_name"
@@ -67,9 +67,19 @@
                 android:id="@+id/tweet_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/tweet_name"
                 android:layout_alignTop="@+id/tweet_name"
+                android:layout_toRightOf="@+id/tweet_name"
                 android:text="\@mavamaarten"
+                android:textColor="#999" />
+
+            <TextView
+                android:id="@+id/tweet_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/tweet_username"
+                android:layout_marginRight="2dp"
+                android:text="8h"
                 android:textColor="#999" />
 
             <TextView
@@ -78,62 +88,59 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tweet_name"
                 android:layout_below="@+id/tweet_name"
-                android:layout_marginTop="2dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="2dp"
                 android:text="Deze was wel een tweet waard. Interessante en toffe presentatie! #ticonfdays2015" />
-
         </RelativeLayout>
 
-
-
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_below="@+id/tweet_body"
-            android:layout_alignLeft="@+id/tweet_profile_pic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tweet_profile_pic"
+            android:layout_below="@+id/tweet_body"
             android:layout_marginTop="5dp"
+            android:orientation="horizontal"
             android:weightSum="4">
 
             <ImageView
                 android:id="@+id/btn_tweet_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_reply"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingBottom="3dp"
+                android:paddingTop="2dp"
+                android:src="@drawable/ic_reply" />
 
             <ImageView
                 android:id="@+id/btn_tweet_retweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_retweet"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingBottom="3dp"
+                android:paddingTop="2dp"
+                android:src="@drawable/ic_retweet" />
 
             <ImageView
                 android:id="@+id/btn_tweet_heart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_heart"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingBottom="3dp"
+                android:paddingTop="2dp"
+                android:src="@drawable/ic_heart" />
 
             <ImageView
                 android:id="@+id/btn_tweet_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_dots_vertical"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingBottom="3dp"
+                android:paddingTop="2dp"
+                android:src="@drawable/ic_dots_vertical" />
 
         </LinearLayout>
 

@@ -20,7 +20,7 @@ public class TweetModule {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.twitter.com/1.1/")
                 .setClient(new SignedOkClient(consumer))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
 
         tweetService = restAdapter.create(TweetService.class);
