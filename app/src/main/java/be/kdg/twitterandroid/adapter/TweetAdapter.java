@@ -140,8 +140,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             tweetView.tweetRetweetCount.setText("");
         }
 
-        if(tweet.getFavorite_count() > 0){
-            tweetView.tweetHeartCount.setText(String.valueOf(tweet.getFavorite_count()));
+        if(displayedTweet.getFavorite_count() > 0){
+            tweetView.tweetHeartCount.setText(String.valueOf(displayedTweet.getFavorite_count()));
         } else {
             tweetView.tweetHeartCount.setText("");
         }
@@ -159,6 +159,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 Picasso.with(context)
                         .load(mediaEntity.getMedia_url())
                         .into(tweetView.imgTweet);
+                final Entities.MediaEntity finalMediaEntity = mediaEntity;
+                tweetView.imgTweet.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(finalMediaEntity.getMedia_url()));
+                        context.startActivity(intent);
+                    }
+                });
             } else tweetView.imgTweet.setVisibility(View.GONE);
         } else tweetView.imgTweet.setVisibility(View.GONE);
 
