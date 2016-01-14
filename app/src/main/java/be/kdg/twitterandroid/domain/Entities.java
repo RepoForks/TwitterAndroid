@@ -60,7 +60,7 @@ public class Entities {
     }
 
     public class MediaEntity {
-        private int id;
+        private long id;
 
         private String id_str,
                 media_url,
@@ -72,7 +72,7 @@ public class Entities {
 
         private int[] indices;
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
@@ -280,8 +280,9 @@ public class Entities {
     }
 
     public class ExtendedEntity {
-        private int id,
-                duration_millis;
+        private long id;
+
+        private int duration_millis;
 
         private String id_str,
                 media_url,
@@ -294,9 +295,7 @@ public class Entities {
         private int[] indices;
         private int[] video_info;
 
-        // Possible TODO: implement video variants
-
-        public int getId() {
+        public long getId() {
             return id;
         }
 

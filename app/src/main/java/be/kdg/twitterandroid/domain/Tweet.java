@@ -1,9 +1,11 @@
 package be.kdg.twitterandroid.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by Maarten on 5/01/2016.
  */
-public class Tweet {
+public class Tweet implements Serializable {
     private long id,
             in_reply_to_status_id,
             in_reply_to_user_id,

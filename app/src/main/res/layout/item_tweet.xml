@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/material_card"
+        android:paddingTop="9dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="6dp"
+        android:elevation="1dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/tweet_ic_retweeted"
+                android:layout_width="20dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_retweeted"
+                android:layout_alignRight="@+id/tweet_profile_pic"
+                android:visibility="visible"
+                android:layout_marginBottom="8dp"
+                android:paddingTop="3dp"/>
+
+            <TextView
+                android:id="@+id/tweet_name_retweeted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tweet_name"
+                android:layout_alignTop="@+id/tweet_ic_retweeted"
+                android:layout_marginTop="-1dp"
+                android:text="Ignace retweeted"
+                android:textColor="#999"/>
+
+            <ImageView
+                android:layout_below="@+id/tweet_ic_retweeted"
+                android:id="@+id/tweet_profile_pic"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="3dp"
+                android:background="#ccc"/>
+
+            <TextView
+                android:id="@+id/tweet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tweet_profile_pic"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="-5dp"
+                android:layout_toRightOf="@+id/tweet_profile_pic"
+                android:text="Maarten"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tweet_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tweet_name"
+                android:layout_alignTop="@+id/tweet_name"
+                android:text="\@mavamaarten"
+                android:textColor="#999" />
+
+            <TextView
+                android:id="@+id/tweet_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tweet_name"
+                android:layout_below="@+id/tweet_name"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="5dp"
+                android:text="Deze was wel een tweet waard. Interessante en toffe presentatie! #ticonfdays2015" />
+
+        </RelativeLayout>
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_below="@+id/tweet_body"
+            android:layout_alignLeft="@+id/tweet_profile_pic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:weightSum="4">
+
+            <ImageView
+                android:id="@+id/btn_tweet_reply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_reply"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"/>
+
+            <ImageView
+                android:id="@+id/btn_tweet_retweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_retweet"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"/>
+
+            <ImageView
+                android:id="@+id/btn_tweet_heart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_heart"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"/>
+
+            <ImageView
+                android:id="@+id/btn_tweet_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_dots_vertical"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackground"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

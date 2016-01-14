@@ -1,12 +1,12 @@
 package be.kdg.twitterandroid.domain;
 
-import java.util.Dictionary;
+import java.util.Map;
 
 /**
  * Created by Maarten on 5/01/2016.
  */
 public class Place {
-    private Dictionary<String, String> attributes;
+    private Map<String, String> attributes;
 
     private String country,
             country_code,
@@ -16,11 +16,11 @@ public class Place {
             place_type,
             url;
 
-    public Dictionary<String, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Dictionary<String, String> attributes) {
+    public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
 
