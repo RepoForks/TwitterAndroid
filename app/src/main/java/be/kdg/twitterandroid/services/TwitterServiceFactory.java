@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.api;
+package be.kdg.twitterandroid.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;

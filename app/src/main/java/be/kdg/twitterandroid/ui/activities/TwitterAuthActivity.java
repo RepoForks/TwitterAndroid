@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.activities;
+package be.kdg.twitterandroid.ui.activities;
 
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -12,7 +12,7 @@ import android.webkit.WebViewClient;
 
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
-import be.kdg.twitterandroid.api.TwitterServiceFactory;
+import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.config.Constants;
 import butterknife.Bind;
 import butterknife.ButterKnife;

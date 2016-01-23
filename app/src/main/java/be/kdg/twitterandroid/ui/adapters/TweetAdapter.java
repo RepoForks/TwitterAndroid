@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.adapters;
+package be.kdg.twitterandroid.ui.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,11 +20,11 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
-import be.kdg.twitterandroid.activities.listeners.TweetInteractionListener;
+import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.domain.Entities;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
-import be.kdg.twitterandroid.helpers.DateHelper;
+import be.kdg.twitterandroid.utils.DateHelper;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 

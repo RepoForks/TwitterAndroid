@@ -2,7 +2,7 @@ package be.kdg.twitterandroid;
 
 import android.app.Application;
 
-import be.kdg.twitterandroid.api.TweetService;
+import be.kdg.twitterandroid.services.TweetService;
 
 /**
  * Created by Maarten on 23/01/2016.

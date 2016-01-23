@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.activities.listeners;
+package be.kdg.twitterandroid.ui.activities.listeners;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;

@@ -13,7 +13,7 @@
         android:name=".TwitterAndroidApplication">
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.TwitterAuthActivity" />
+        <activity android:name=".ui.activities.TwitterAuthActivity" />
     </application>
 
 </manifest>

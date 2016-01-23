@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.api;
+package be.kdg.twitterandroid.services;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

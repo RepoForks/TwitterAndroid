@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.helpers;
+package be.kdg.twitterandroid.utils;
 
 import android.text.format.DateUtils;
 

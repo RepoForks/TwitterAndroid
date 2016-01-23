@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.activities;
+package be.kdg.twitterandroid.ui.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,10 +22,10 @@ import java.util.List;
 
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
-import be.kdg.twitterandroid.activities.listeners.EndlessRecyclerOnScrollListener;
-import be.kdg.twitterandroid.activities.listeners.TweetInteractionListener;
-import be.kdg.twitterandroid.adapters.TweetAdapter;
-import be.kdg.twitterandroid.api.TwitterServiceFactory;
+import be.kdg.twitterandroid.ui.activities.listeners.EndlessRecyclerOnScrollListener;
+import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
+import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
+import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import butterknife.Bind;
