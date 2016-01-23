@@ -51,7 +51,7 @@ public class User {
 
     private Entities entities;
 
-    private Tweet[] status;
+    private Tweet status;
 
     public long getId() {
         return id;
@@ -246,7 +246,7 @@ public class User {
     }
 
     public String getProfile_image_url() {
-        return profile_image_url;
+        return profile_image_url.replace("_normal", "");
     }
 
     public void setProfile_image_url(String profile_image_url) {
@@ -254,7 +254,7 @@ public class User {
     }
 
     public String getProfile_image_url_https() {
-        return profile_image_url_https;
+        return profile_image_url_https.replace("_normal", "");
     }
 
     public void setProfile_image_url_https(String profile_image_url_https) {
@@ -389,11 +389,11 @@ public class User {
         this.entities = entities;
     }
 
-    public Tweet[] getStatus() {
+    public Tweet getStatus() {
         return status;
     }
 
-    public void setStatus(Tweet[] status) {
+    public void setStatus(Tweet status) {
         this.status = status;
     }
 }

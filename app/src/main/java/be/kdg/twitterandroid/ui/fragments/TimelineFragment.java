@@ -16,6 +16,7 @@ import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
+import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.ui.activities.listeners.EndlessRecyclerOnScrollListener;
 import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
@@ -46,7 +47,7 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         setupTimeline();
         setupRefreshLayout();
 
-        if(application.getTweetService() != null) refreshTweets();
+        if(application.userHasAuthTokens()) refreshTweets();
 
         return view;
     }
@@ -85,7 +86,7 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
                 swipeRefreshLayout.setRefreshing(true);
             }
         });
-        application.getTweetService().getHomeTimeline(20, null, new Callback<List<Tweet>>() {
+        TwitterServiceFactory.getTweetService().getHomeTimeline(20, null, new Callback<List<Tweet>>() {
             @Override
             public void success(List<Tweet> tweets, Response response) {
                 List<Tweet> tweetList = application.getTweets();
@@ -104,7 +105,7 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
     }
 
     public void loadMoreTweets(){
-        application.getTweetService().getHomeTimeline(20, getLastTweetId() - 1, new Callback<List<Tweet>>() {
+        TwitterServiceFactory.getTweetService().getHomeTimeline(20, getLastTweetId() - 1, new Callback<List<Tweet>>() {
             @Override
             public void success(List<Tweet> tweets, Response response) {
                 application.getTweets().addAll(tweets);
@@ -120,7 +121,7 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
 
     private long getLastTweetId(){
         return application.getTweets()
-                .get( application.getTweets().size() - 1 )
+                .get(application.getTweets().size() - 1)
                 .getId();
     }
 

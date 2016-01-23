@@ -11,9 +11,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import be.kdg.twitterandroid.R;
-import be.kdg.twitterandroid.TwitterAndroidApplication;
-import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.config.Constants;
+import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import oauth.signpost.OAuthConsumer;
@@ -98,9 +97,7 @@ public class TwitterAuthActivity extends AppCompatActivity {
                     String token = mConsumer.getToken();
                     String tokenSecret = mConsumer.getTokenSecret();
 
-                    TwitterServiceFactory twitterServiceFactory = new TwitterServiceFactory();
-                    twitterServiceFactory.setOAuthTokens(token, tokenSecret);
-                    ((TwitterAndroidApplication)getApplication()).setTweetService(twitterServiceFactory.getTweetService());
+                    TwitterServiceFactory.setOAuthTokens(token, tokenSecret);
 
                     SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
                     prefsEditor.putString("token", token);

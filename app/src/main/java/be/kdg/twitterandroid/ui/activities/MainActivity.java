@@ -1,8 +1,12 @@
 package be.kdg.twitterandroid.ui.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -12,20 +16,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
+import be.kdg.twitterandroid.domain.User;
+import be.kdg.twitterandroid.services.TwitterServiceFactory;
+import be.kdg.twitterandroid.services.UserService;
 import be.kdg.twitterandroid.ui.fragments.TimelineFragment;
 import be.kdg.twitterandroid.ui.fragments.UserFragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Bind(R.id.toolbar)          Toolbar toolbar;
     @Bind(R.id.drawer_layout)    DrawerLayout drawer;
     @Bind(R.id.nav_view)         NavigationView navigationView;
     @Bind(R.id.framelayout_main) FrameLayout frameLayout;
+
+    TextView txtHeaderScreenName;
+    TextView txtHeaderName;
+    CircleImageView imgHeaderProfilePic;
+    LinearLayout navHeaderBg;
 
     private static final int REQ_AUTH = 0;
 
@@ -44,10 +66,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupFragments();
         setupNavigationMenu();
 
-        if(application.getTweetService() == null){
+        if(!application.userHasAuthTokens()){
             Intent authIntent = new Intent(this, TwitterAuthActivity.class);
             startActivityForResult(authIntent, REQ_AUTH);
+        } else {
+            fetchCurrentUser();
         }
+    }
+
+    private void fetchCurrentUser() {
+        UserService userService = TwitterServiceFactory.getUserService();
+        userService.getCurrentUser(new Callback<User>() {
+            @Override
+            public void success(User user, Response response) {
+                application.setCurrentUser(user);
+
+                txtHeaderScreenName.setText("@" + user.getScreen_name());
+                txtHeaderName.setText(user.getName());
+
+                Picasso.with(MainActivity.this)
+                        .load(user.getProfile_image_url())
+                        .into(imgHeaderProfilePic);
+
+                final LinearLayout finalheaderbg = navHeaderBg;
+                final Target headerBgTarget = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        finalheaderbg.setBackground(new BitmapDrawable(getResources(), bitmap));
+                        System.out.println("Bitmap loaded???");
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        System.out.println("Bitmap failed");
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        System.out.println("Prepare load");
+                    }
+                };
+                finalheaderbg.setTag(headerBgTarget);
+
+                Picasso.with(MainActivity.this)
+                        .load(user.getProfile_banner_url())
+                        .into(headerBgTarget);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Snackbar.make(frameLayout, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG);
+            }
+        });
     }
 
     private void setupFragments(){
@@ -67,6 +137,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        View navHeader = navigationView.getHeaderView(0);
+        txtHeaderScreenName = (TextView) navHeader.findViewById(R.id.nav_header_screenname);
+        txtHeaderName = (TextView) navHeader.findViewById(R.id.nav_header_name);
+        imgHeaderProfilePic = (CircleImageView) navHeader.findViewById(R.id.nav_header_profilepic);
+        navHeaderBg = (LinearLayout) navHeader.findViewById(R.id.nav_header_bg);
     }
 
     @Override

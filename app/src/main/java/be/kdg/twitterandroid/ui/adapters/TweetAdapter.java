@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
+import be.kdg.twitterandroid.ui.DarkClickableSpan;
 import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.domain.Entities;
 import be.kdg.twitterandroid.domain.Tweet;

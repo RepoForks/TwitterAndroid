@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.ui.adapters;
+package be.kdg.twitterandroid.ui;
 
 import android.graphics.Color;
 import android.text.TextPaint;
