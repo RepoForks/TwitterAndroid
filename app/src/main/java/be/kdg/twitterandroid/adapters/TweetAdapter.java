@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.adapter;
+package be.kdg.twitterandroid.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -20,17 +19,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import be.kdg.twitterandroid.R;
-import be.kdg.twitterandroid.activities.TweetInteractionListener;
+import be.kdg.twitterandroid.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.domain.Entities;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
+import be.kdg.twitterandroid.helpers.DateHelper;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -131,8 +127,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
         tweetView.tweetBody.setMovementMethod(LinkMovementMethod.getInstance());
         tweetView.tweetBody.setText(tweetBody);
-
-        tweetView.tweetTimestamp.setText(getSimpleDateString(tweet.getCreated_at()));
+        tweetView.tweetTimestamp.setText(DateHelper.getSimpleDateString(tweet.getCreated_at()));
 
         if(tweet.getRetweet_count() > 0){
             tweetView.tweetRetweetCount.setText(String.valueOf(tweet.getRetweet_count()));
@@ -218,34 +213,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 interactionListener.onUserClick((User)view.getTag());
             }
         });
-    }
-
-    private static String getSimpleDateString(String twitterDateString){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
-        dateFormat.setLenient(false);
-
-        try {
-            Date date = dateFormat.parse(twitterDateString);
-            Date now = new Date();
-            long delta = (now.getTime() - date.getTime()) / (1000 * 60 * 60); // delta in hours
-
-            if(delta < 1)
-            {
-                long minuteDelta = (now.getTime() - date.getTime()) / (1000 * 60); // delta in minutes
-                return minuteDelta + "m";
-            }
-            if(delta < 24)
-                return delta + "h";
-            if(delta > 168)
-                return (delta / 168) + "wk";
-            if(delta >= 24)
-                return (delta / 24) + "d";
-
-            return DateUtils.getRelativeTimeSpanString(date.getTime()).toString();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Override

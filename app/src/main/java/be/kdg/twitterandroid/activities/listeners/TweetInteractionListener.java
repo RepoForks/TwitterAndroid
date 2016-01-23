@@ -1,4 +1,4 @@
-package be.kdg.twitterandroid.activities;
+package be.kdg.twitterandroid.activities.listeners;
 
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;

@@ -11,6 +11,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import be.kdg.twitterandroid.R;
+import be.kdg.twitterandroid.TwitterAndroidApplication;
+import be.kdg.twitterandroid.api.TwitterServiceFactory;
+import be.kdg.twitterandroid.config.Constants;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import oauth.signpost.OAuthConsumer;
@@ -55,13 +58,13 @@ public class TwitterAuthActivity extends AppCompatActivity {
 
     private void initTwitter(){
         mConsumer = new DefaultOAuthConsumer(
-                "OtL5mNMElZBZFzcMjOQCULI1P", // API Key
-                "Bw23dovGvdHSoij3eyjwSh5elXs4X17f8my1eN04rcbOT3Fhzw"     // API Secret
+                Constants.API_KEY,
+                Constants.API_SECRET
         );
         mProvider = new DefaultOAuthProvider(
-                "https://api.twitter.com/oauth/request_token",
-                "https://api.twitter.com/oauth/access_token",
-                "https://api.twitter.com/oauth/authorize"
+                Constants.API_OAUTH_REQ_TOKEN,
+                Constants.API_OAUTH_ACC_TOKEN,
+                Constants.API_OAUTH_AUTH
         );
 
         new AsyncTask<Void, Void, Void>() {
@@ -94,6 +97,10 @@ public class TwitterAuthActivity extends AppCompatActivity {
 
                     String token = mConsumer.getToken();
                     String tokenSecret = mConsumer.getTokenSecret();
+
+                    TwitterServiceFactory twitterServiceFactory = new TwitterServiceFactory();
+                    twitterServiceFactory.setOAuthTokens(token, tokenSecret);
+                    ((TwitterAndroidApplication)getApplication()).setTweetService(twitterServiceFactory.getTweetService());
 
                     SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
                     prefsEditor.putString("token", token);

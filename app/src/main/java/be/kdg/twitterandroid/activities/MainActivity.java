@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
+import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.activities.listeners.EndlessRecyclerOnScrollListener;
-import be.kdg.twitterandroid.adapter.TweetAdapter;
-import be.kdg.twitterandroid.api.TweetModule;
-import be.kdg.twitterandroid.api.TweetService;
+import be.kdg.twitterandroid.activities.listeners.TweetInteractionListener;
+import be.kdg.twitterandroid.adapters.TweetAdapter;
+import be.kdg.twitterandroid.api.TwitterServiceFactory;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import butterknife.Bind;
@@ -42,10 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final int REQ_AUTH = 0;
 
-    private SharedPreferences sharedPreferences;
-    private TweetModule module;
-    private TweetService tweetService;
-
+    private TwitterAndroidApplication application;
     private List<Tweet> tweets;
     private TweetAdapter tweetAdapter;
 
@@ -54,16 +52,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        application = (TwitterAndroidApplication) getApplication();
 
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        setupNavigationMenu();
+        setupTweetList();
+        setupRefreshLayout();
 
-        navigationView.setNavigationItemSelectedListener(this);
+        if(!userHasAuthTokens()){
+            Intent authIntent = new Intent(this, TwitterAuthActivity.class);
+            startActivityForResult(authIntent, REQ_AUTH);
+        } else {
+            TwitterServiceFactory twitterServiceFactory = new TwitterServiceFactory();
+            twitterServiceFactory.setOAuthTokensFromSharedPreferences(getApplication());
+            ((TwitterAndroidApplication)getApplication()).setTweetService(twitterServiceFactory.getTweetService());
+            refreshTweets();
+        }
+    }
 
+    private void setupTweetList(){
         tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(tweets, this, this);
+        tweetAdapter = new TweetAdapter(
+                tweets, // Tweets
+                this,   // TweetInteractionListener
+                this    // Activity
+        );
         listTweets.setAdapter(tweetAdapter);
 
         LinearLayoutManager llmanager = new LinearLayoutManager(this);
@@ -74,18 +86,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 loadMoreTweets();
             }
         });
+    }
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
-        module = new TweetModule();
-        if(!sharedPreferences.contains("token") || !sharedPreferences.contains("tokenSecret")){
-            Intent authIntent = new Intent(this, TwitterAuthActivity.class);
-            startActivityForResult(authIntent, REQ_AUTH);
-        } else {
-            module.init(sharedPreferences.getString("token", null), sharedPreferences.getString("tokenSecret", null));
-            tweetService = module.getTweetService();
-            refreshTweets();
-        }
+    private void setupNavigationMenu(){
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
 
+    private void setupRefreshLayout(){
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -94,9 +105,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private boolean userHasAuthTokens(){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        return sharedPrefs.contains("token") && sharedPrefs.contains("tokenSecret");
+    }
+
     public void refreshTweets(){
         swipeRefreshLayout.setRefreshing(true);
-        tweetService.getHomeTimeline(20, null, new Callback<List<Tweet>>() {
+        application.getTweetService().getHomeTimeline(20, null, new Callback<List<Tweet>>() {
             @Override
             public void success(List<Tweet> tweets, Response response) {
                 MainActivity.this.tweets.clear();
@@ -113,14 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshTweets();
-    }
-
     public void loadMoreTweets(){
-        tweetService.getHomeTimeline(20, tweets.get(tweets.size() - 1).getId() - 1, new Callback<List<Tweet>>() {
+        application.getTweetService().getHomeTimeline(20, tweets.get(tweets.size() - 1).getId() - 1, new Callback<List<Tweet>>() {
             @Override
             public void success(List<Tweet> tweets, Response response) {
                 MainActivity.this.tweets.addAll(tweets);
@@ -140,8 +150,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (requestCode) {
             case REQ_AUTH:
-                module.init(sharedPreferences.getString("token", null), sharedPreferences.getString("tokenSecret", null));
-                tweetService = module.getTweetService();
                 refreshTweets();
                 break;
         }
