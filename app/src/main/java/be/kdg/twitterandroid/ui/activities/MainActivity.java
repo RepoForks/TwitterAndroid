@@ -1,51 +1,38 @@
 package be.kdg.twitterandroid.ui.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.FrameLayout;
 
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
-import be.kdg.twitterandroid.ui.activities.listeners.EndlessRecyclerOnScrollListener;
-import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
-import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
-import be.kdg.twitterandroid.services.TwitterServiceFactory;
-import be.kdg.twitterandroid.domain.Tweet;
-import be.kdg.twitterandroid.domain.User;
+import be.kdg.twitterandroid.ui.fragments.TimelineFragment;
+import be.kdg.twitterandroid.ui.fragments.UserFragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TweetInteractionListener {
-    @Bind(R.id.toolbar)       Toolbar toolbar;
-    @Bind(R.id.drawer_layout) DrawerLayout drawer;
-    @Bind(R.id.nav_view)      NavigationView navigationView;
-    @Bind(R.id.list_tweets)   RecyclerView listTweets;
-    @Bind(R.id.swiperefresh_tweets) SwipeRefreshLayout swipeRefreshLayout;
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    @Bind(R.id.toolbar)          Toolbar toolbar;
+    @Bind(R.id.drawer_layout)    DrawerLayout drawer;
+    @Bind(R.id.nav_view)         NavigationView navigationView;
+    @Bind(R.id.framelayout_main) FrameLayout frameLayout;
 
     private static final int REQ_AUTH = 0;
 
     private TwitterAndroidApplication application;
-    private List<Tweet> tweets;
-    private TweetAdapter tweetAdapter;
+
+    private TimelineFragment timelineFragment;
+    private UserFragment userFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,38 +41,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         application = (TwitterAndroidApplication) getApplication();
 
+        setupFragments();
         setupNavigationMenu();
-        setupTweetList();
-        setupRefreshLayout();
 
-        if(!userHasAuthTokens()){
+        if(application.getTweetService() == null){
             Intent authIntent = new Intent(this, TwitterAuthActivity.class);
             startActivityForResult(authIntent, REQ_AUTH);
-        } else {
-            TwitterServiceFactory twitterServiceFactory = new TwitterServiceFactory();
-            twitterServiceFactory.setOAuthTokensFromSharedPreferences(getApplication());
-            ((TwitterAndroidApplication)getApplication()).setTweetService(twitterServiceFactory.getTweetService());
-            refreshTweets();
         }
     }
 
-    private void setupTweetList(){
-        tweets = new ArrayList<>();
-        tweetAdapter = new TweetAdapter(
-                tweets, // Tweets
-                this,   // TweetInteractionListener
-                this    // Activity
-        );
-        listTweets.setAdapter(tweetAdapter);
+    private void setupFragments(){
+        timelineFragment = new TimelineFragment();
+        userFragment = new UserFragment();
 
-        LinearLayoutManager llmanager = new LinearLayoutManager(this);
-        listTweets.setLayoutManager(llmanager);
-        listTweets.addOnScrollListener(new EndlessRecyclerOnScrollListener(llmanager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                loadMoreTweets();
-            }
-        });
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.framelayout_main, timelineFragment).commit();
+
+        navigationView.getMenu().getItem(0).setChecked(true);
+        setTitle(navigationView.getMenu().getItem(0).getTitle());
     }
 
     private void setupNavigationMenu(){
@@ -96,61 +69,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void setupRefreshLayout(){
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshTweets();
-            }
-        });
-    }
-
-    private boolean userHasAuthTokens(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-        return sharedPrefs.contains("token") && sharedPrefs.contains("tokenSecret");
-    }
-
-    public void refreshTweets(){
-        swipeRefreshLayout.setRefreshing(true);
-        application.getTweetService().getHomeTimeline(20, null, new Callback<List<Tweet>>() {
-            @Override
-            public void success(List<Tweet> tweets, Response response) {
-                MainActivity.this.tweets.clear();
-                MainActivity.this.tweets.addAll(tweets);
-                MainActivity.this.tweetAdapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Snackbar.make(listTweets, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-    }
-
-    public void loadMoreTweets(){
-        application.getTweetService().getHomeTimeline(20, tweets.get(tweets.size() - 1).getId() - 1, new Callback<List<Tweet>>() {
-            @Override
-            public void success(List<Tweet> tweets, Response response) {
-                MainActivity.this.tweets.addAll(tweets);
-                MainActivity.this.tweetAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Snackbar.make(listTweets, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) return;
 
         switch (requestCode) {
             case REQ_AUTH:
-                refreshTweets();
+                timelineFragment.refreshTweets();
                 break;
         }
     }
@@ -188,44 +113,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_1) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = timelineFragment;
+        switch(id){
+            case R.id.nav_timeline:
+                fragment = timelineFragment;
+                break;
 
-        } else if (id == R.id.nav_2) {
-
+            case R.id.nav_user:
+                fragment = userFragment;
+                break;
         }
+        fragmentManager.beginTransaction().replace(R.id.framelayout_main, fragment).commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        item.setChecked(true);
+        setTitle(item.getTitle());
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onTweetReplyClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " reply", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTweetRetweetClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " retweet", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTweetHeartClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " heart", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTweetMenuClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " menu", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onUserClick(User user) {
-        Snackbar.make(listTweets, user.getName() + " clicked", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onHashtagClick(String hashtag) {
-        Snackbar.make(listTweets, "#" + hashtag + " clicked", Snackbar.LENGTH_SHORT).show();
     }
 }
