@@ -3,13 +3,11 @@ package be.kdg.twitterandroid.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,20 +91,35 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                     .into(tweetView.tweetProfilePic);
         }
 
-        Tweet displayedTweet = (tweet.getRetweeted_status() == null) ? tweet : tweet.getRetweeted_status();
-        SpannableString tweetBody = new SpannableString(displayedTweet.getText());
-        for(Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
+        final Tweet displayedTweet = (tweet.getRetweeted_status() == null) ? tweet : tweet.getRetweeted_status();
+        String tweetBodyText = getTweetBodyWithoutPhotoUrls(displayedTweet);
+        SpannableString tweetBody = new SpannableString(tweetBodyText);
+        for(final Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
             tweetBody.setSpan(
-                    new ForegroundColorSpan(Color.argb(255, 50, 50, 50)),
-                    hashtag.getIndices()[0] + 1,
+                    new DarkClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            interactionListener.onHashtagClick(hashtag.getText());
+                        }
+                    },
+                    hashtag.getIndices()[0],
                     hashtag.getIndices()[1],
                     0
             );
         }
-        for(Entities.UserMentionsEntity userMention : displayedTweet.getEntities().getUser_mentions()){
+        for(final Entities.UserMentionsEntity userMention : displayedTweet.getEntities().getUser_mentions()){
             tweetBody.setSpan(
-                    new ForegroundColorSpan(Color.argb(255, 50, 50, 50)),
-                    userMention.getIndices()[0] + 1,
+                    new DarkClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            User user = new User();
+                            user.setId(userMention.getId());
+                            user.setName(userMention.getName());
+                            user.setScreen_name(userMention.getScreen_name());
+                            interactionListener.onUserClick(user);
+                        }
+                    },
+                    userMention.getIndices()[0],
                     userMention.getIndices()[1],
                     0
             );
@@ -213,6 +226,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                 interactionListener.onUserClick((User)view.getTag());
             }
         });
+    }
+
+    private String getTweetBodyWithoutPhotoUrls(Tweet tweet){
+        String tweetBody = tweet.getText();
+        if(tweet.getEntities().getMedia() != null && tweet.getEntities().getMedia().length > 0){
+            for(Entities.MediaEntity mediaEntity : tweet.getEntities().getMedia()){
+                if (tweetBody.endsWith(mediaEntity.getUrl())) {
+                    tweetBody = tweetBody.substring(0, tweetBody.length() - mediaEntity.getUrl().length() - 1);
+                }
+            }
+        }
+
+        return tweetBody;
     }
 
     @Override

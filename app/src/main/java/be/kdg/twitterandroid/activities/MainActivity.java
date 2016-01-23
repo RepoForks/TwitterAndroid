@@ -223,4 +223,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onUserClick(User user) {
         Snackbar.make(listTweets, user.getName() + " clicked", Snackbar.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onHashtagClick(String hashtag) {
+        Snackbar.make(listTweets, "#" + hashtag + " clicked", Snackbar.LENGTH_SHORT).show();
+    }
 }

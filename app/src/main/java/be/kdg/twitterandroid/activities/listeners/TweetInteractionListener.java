@@ -12,4 +12,5 @@ public interface TweetInteractionListener {
     void onTweetHeartClick(Tweet tweet);
     void onTweetMenuClick(Tweet tweet);
     void onUserClick(User user);
+    void onHashtagClick(String hashtag);
 }
