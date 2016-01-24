@@ -157,13 +157,47 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
     }
 
     @Override
-    public void onTweetRetweetClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " retweet", Snackbar.LENGTH_SHORT).show();
+    public void onTweetRetweetClick(final Tweet tweet) {
+        Callback<Tweet> updateRetweetedStatus = new Callback<Tweet>() {
+            @Override
+            public void success(Tweet tw, Response response) {
+                tweet.setRetweeted(tw.isRetweeted());
+                tweetAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Snackbar.make(swipeRefreshLayout, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        };
+
+        if(tweet.isRetweeted()){
+            TwitterServiceFactory.getTweetService().unretweetTweet(tweet.getId(), updateRetweetedStatus);
+        } else {
+            TwitterServiceFactory.getTweetService().retweetTweet(tweet.getId(), updateRetweetedStatus);
+        }
     }
 
     @Override
-    public void onTweetHeartClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " heart", Snackbar.LENGTH_SHORT).show();
+    public void onTweetHeartClick(final Tweet tweet) {
+        Callback<Tweet> updateFavoritedStatus = new Callback<Tweet>() {
+            @Override
+            public void success(Tweet tw, Response response) {
+                tweet.setRetweeted(tw.isRetweeted());
+                tweetAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Snackbar.make(swipeRefreshLayout, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        };
+
+        if(tweet.isFavorited()){
+            TwitterServiceFactory.getTweetService().unfavoriteTweet(tweet.getId(), updateFavoritedStatus);
+        } else {
+            TwitterServiceFactory.getTweetService().favoriteTweet(tweet.getId(), updateFavoritedStatus);
+        }
     }
 
     @Override
