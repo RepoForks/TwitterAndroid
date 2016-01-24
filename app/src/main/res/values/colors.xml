@@ -3,4 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#E00</color>
+    <color name="colorText">#999</color>
+    <color name="colorRetweeted">#5C913B</color>
+    <color name="colorHearted">#E2264D</color>
 </resources>

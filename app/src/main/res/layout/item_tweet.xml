@@ -30,7 +30,7 @@
                 android:layout_alignRight="@+id/tweet_profile_pic"
                 android:layout_marginBottom="8dp"
                 android:paddingTop="3dp"
-                android:src="@drawable/ic_retweeted"
+                android:src="@drawable/ic_tweet_retweeted"
                 android:visibility="visible" />
 
             <TextView

@@ -56,8 +56,24 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     public void onBindViewHolder(TweetViewHolder tweetView, int position) {
         final Tweet tweet = tweets.get(position);
 
+        if(tweet.isRetweeted()){
+            tweetView.tweetRetweetCount.setTextColor(context.getResources().getColor(R.color.colorRetweeted));
+            tweetView.icRetweet.setImageResource(R.drawable.ic_retweeted);
+        } else {
+            tweetView.tweetRetweetCount.setTextColor(context.getResources().getColor(R.color.colorText));
+            tweetView.icRetweet.setImageResource(R.drawable.ic_retweet);
+        }
+
+        if(tweet.isFavorited()){
+            tweetView.tweetHeartCount.setTextColor(context.getResources().getColor(R.color.colorHearted));
+            tweetView.icFavorite.setImageResource(R.drawable.ic_heart_favorited);
+        } else {
+            tweetView.tweetHeartCount.setTextColor(context.getResources().getColor(R.color.colorText));
+            tweetView.icFavorite.setImageResource(R.drawable.ic_heart);
+        }
+
         if(tweet.getRetweeted_status() != null){
-            tweetView.icRetweeted.setVisibility(View.VISIBLE);
+            tweetView.icTweetRetweeted.setVisibility(View.VISIBLE);
             tweetView.tweetRetweetedName.setVisibility(View.VISIBLE);
 
             tweetView.tweetRetweetedName.setText(String.format("%s retweeted", tweet.getUser().getName()));
@@ -76,7 +92,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
                     .into(tweetView.tweetProfilePic);
 
         } else {
-            tweetView.icRetweeted.setVisibility(View.GONE);
+            tweetView.icTweetRetweeted.setVisibility(View.GONE);
             tweetView.tweetRetweetedName.setVisibility(View.GONE);
 
             tweetView.tweetName.setText(tweet.getUser().getName());
@@ -259,7 +275,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         @Bind(R.id.btn_tweet_heart)      LinearLayout btnTweetHeart;
         @Bind(R.id.tweet_heart_count)    TextView tweetHeartCount;
         @Bind(R.id.btn_tweet_menu)       ImageView btnTweetMenu;
-        @Bind(R.id.tweet_ic_retweeted)   ImageView icRetweeted;
+        @Bind(R.id.tweet_ic_retweeted)   ImageView icTweetRetweeted;
+        @Bind(R.id.ic_tweet_retweet)     ImageView icRetweet;
+        @Bind(R.id.ic_tweet_heart)       ImageView icFavorite;
         @Bind(R.id.tweet_name_retweeted) TextView tweetRetweetedName;
         @Bind(R.id.tweet_img)            ImageView imgTweet;
 
