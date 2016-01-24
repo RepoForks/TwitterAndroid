@@ -17,6 +17,15 @@ import be.kdg.twitterandroid.services.TwitterServiceFactory;
 public class TwitterAndroidApplication extends Application {
     private User currentUser;
     private List<Tweet> tweets;
+    private List<Tweet> profileTweets;
+
+    public List<Tweet> getProfileTweets() {
+        return profileTweets;
+    }
+
+    public void setProfileTweets(List<Tweet> profileTweets) {
+        this.profileTweets = profileTweets;
+    }
 
     public User getCurrentUser() {
         return currentUser;
@@ -43,6 +52,7 @@ public class TwitterAndroidApplication extends Application {
     public void onCreate() {
         super.onCreate();
         this.tweets = new ArrayList<>();
+        this.profileTweets = new ArrayList<>();
 
         if(userHasAuthTokens()){
             TwitterServiceFactory.setOAuthTokensFromSharedPreferences(this);

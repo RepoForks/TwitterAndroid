@@ -18,6 +18,13 @@ public interface TweetService {
             Callback<List<Tweet>> callback
     );
 
+    @GET("/statuses/user_timeline.json")
+    void getUserTimeline(
+            @Query("user_id") long userId,
+            @Query("count") int count,
+            Callback<List<Tweet>> callback
+    );
+
     @GET("/statuses/home_timeline.json")
     void getHomeTimeline(
             @Query("count") int count,

@@ -1,6 +1,7 @@
 package be.kdg.twitterandroid.ui.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -29,6 +30,7 @@ import retrofit.client.Response;
 public class TimelineFragment extends Fragment implements TweetInteractionListener {
     @Bind(R.id.list_tweets)          RecyclerView listTweets;
     @Bind(R.id.swiperefresh_tweets)  SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.fab)                  FloatingActionButton fab;
 
     private TwitterAndroidApplication application;
     private TweetAdapter tweetAdapter;
@@ -45,11 +47,25 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         ButterKnife.bind(this, view);
 
         setupTimeline();
+        setupFab();
         setupRefreshLayout();
 
-        if(application.userHasAuthTokens()) refreshTweets();
 
+        if(application.userHasAuthTokens()) refreshTweets();
         return view;
+    }
+
+    private void setupFab(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFabClick();
+            }
+        });
+    }
+
+    private void onFabClick() {
+        Snackbar.make(swipeRefreshLayout, "New tweet", Snackbar.LENGTH_SHORT).show();
     }
 
     private void setupTimeline(){
@@ -66,6 +82,16 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
             @Override
             public void onLoadMore(int current_page) {
                 loadMoreTweets();
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy > 0){
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
             }
         });
     }

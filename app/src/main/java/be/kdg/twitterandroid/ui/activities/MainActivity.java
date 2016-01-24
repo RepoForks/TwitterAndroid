@@ -29,8 +29,9 @@ import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.services.UserService;
+import be.kdg.twitterandroid.ui.fragments.AboutFragment;
+import be.kdg.twitterandroid.ui.fragments.ProfileFragment;
 import be.kdg.twitterandroid.ui.fragments.TimelineFragment;
-import be.kdg.twitterandroid.ui.fragments.UserFragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -52,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int REQ_AUTH = 0;
 
     private TwitterAndroidApplication application;
-
     private TimelineFragment timelineFragment;
-    private UserFragment userFragment;
+    private ProfileFragment profileFragment;
+    private AboutFragment aboutFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,13 +123,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupFragments(){
         timelineFragment = new TimelineFragment();
-        userFragment = new UserFragment();
+        profileFragment = new ProfileFragment();
+        aboutFragment = new AboutFragment();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.framelayout_main, timelineFragment).commit();
 
-        navigationView.getMenu().getItem(0).setChecked(true);
-        setTitle(navigationView.getMenu().getItem(0).getTitle());
+        setTitle(navigationView.getMenu().getItem(1).getTitle());
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     private void setupNavigationMenu(){
@@ -192,12 +194,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = timelineFragment;
         switch(id){
+            case R.id.nav_profile:
+                fragment = profileFragment;
+                break;
+
             case R.id.nav_timeline:
                 fragment = timelineFragment;
                 break;
 
-            case R.id.nav_user:
-                fragment = userFragment;
+            case R.id.nav_about:
+                fragment = aboutFragment;
                 break;
         }
         fragmentManager.beginTransaction().replace(R.id.framelayout_main, fragment).commit();
