@@ -20,14 +20,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/about_title"
         android:layout_marginBottom="6dp"
-        android:text="TwitterAndroid is a twitter client written in Java, to demonstrate the differences between native android development and Xamarin." />
+        android:text="@string/about_paragraph1" />
 
     <TextView
         android:id="@+id/about_p2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/about_p1"
-        android:text="Made in context of the paper, 'Xamarin vs native', by Maarten Van Giel, Ignace Maes, Matthias Heylen en Mathisse Destrooper" />
+        android:text="@string/about_paragraph2" />
 
     <ImageView
         android:layout_marginTop="16dp"
