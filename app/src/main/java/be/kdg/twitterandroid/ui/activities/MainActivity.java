@@ -35,9 +35,8 @@ import be.kdg.twitterandroid.ui.fragments.TimelineFragment;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Bind(R.id.toolbar)          Toolbar toolbar;
@@ -77,9 +76,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void fetchCurrentUser() {
         UserService userService = TwitterServiceFactory.getUserService();
-        userService.getCurrentUser(new Callback<User>() {
+        userService.getCurrentUser().enqueue(new Callback<User>() {
             @Override
-            public void success(User user, Response response) {
+            public void onResponse(Response<User> response) {
+                if(!response.isSuccess()){
+                    Snackbar.make(frameLayout, "Error: " + response.errorBody().toString(), Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                User user = response.body();
+
                 application.setCurrentUser(user);
 
                 txtHeaderScreenName.setText("@" + user.getScreen_name());
@@ -115,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                Snackbar.make(frameLayout, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG);
+            public void onFailure(Throwable t) {
+                Snackbar.make(frameLayout, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }

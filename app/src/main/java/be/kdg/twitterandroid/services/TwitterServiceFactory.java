@@ -4,10 +4,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.io.IOException;
+
 import be.kdg.twitterandroid.config.Constants;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
-import retrofit.RestAdapter;
+import be.kdg.twitterandroid.services.exceptions.NotFoundException;
+import be.kdg.twitterandroid.services.exceptions.RateLimitExceededException;
+import be.kdg.twitterandroid.services.exceptions.UnauthorizedException;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Retrofit;
+import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer;
+import se.akerfeldt.okhttp.signpost.SigningInterceptor;
 
 /**
  * Created by Maarten on 14/01/2016.
@@ -15,36 +25,57 @@ import retrofit.RestAdapter;
 public class TwitterServiceFactory {
     private static TweetService tweetService;
     private static UserService userService;
-    private static RestAdapter restAdapter;
+    private static Retrofit retrofit;
 
-    private TwitterServiceFactory(){}
+    private TwitterServiceFactory() {
+    }
 
-    public static void setOAuthTokens(String token, String tokenSecret){
-        OAuthConsumer consumer = new DefaultOAuthConsumer(
+    public static void setOAuthTokens(String token, String tokenSecret) {
+        OkHttpOAuthConsumer consumer = new OkHttpOAuthConsumer(
                 Constants.API_KEY,
                 Constants.API_SECRET
         );
         consumer.setTokenWithSecret(token, tokenSecret);
 
-        restAdapter = new RestAdapter.Builder()
-                .setEndpoint(Constants.API_ENDPOINT)
-                .setClient(new SignedOkClient(consumer))
-                .setLogLevel(RestAdapter.LogLevel.BASIC)
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new SigningInterceptor(consumer))
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        Response response = chain.proceed(request);
+                        switch (response.code()) {
+                            case 401:
+                                throw new UnauthorizedException();
+                            case 404:
+                                throw new NotFoundException();
+                            case 429:
+                                throw new RateLimitExceededException();
+                        }
+                        return response;
+                    }
+                })
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.API_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
     }
 
-    public static void setOAuthTokensFromSharedPreferences(Context context){
+    public static void setOAuthTokensFromSharedPreferences(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         setOAuthTokens(prefs.getString("token", null), prefs.getString("tokenSecret", null));
     }
 
     public static synchronized TweetService getTweetService() {
-        if(tweetService == null) tweetService = restAdapter.create(TweetService.class);
+        if (tweetService == null) tweetService = retrofit.create(TweetService.class);
         return tweetService;
     }
 
     public static synchronized UserService getUserService() {
-        if(userService == null) userService = restAdapter.create(UserService.class);
+        if (userService == null) userService = retrofit.create(UserService.class);
         return userService;
     }
 }

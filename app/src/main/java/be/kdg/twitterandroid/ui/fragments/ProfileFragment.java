@@ -30,9 +30,8 @@ import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileFragment extends Fragment implements TweetInteractionListener, SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.profile_banner)      RelativeLayout profileBanner;
@@ -79,8 +78,8 @@ public class ProfileFragment extends Fragment implements TweetInteractionListene
 
     @Override
     public void onRefresh() {
-        loadUserTweets(application.getCurrentUser().getId());
         showUser(application.getCurrentUser());
+        loadUserTweets(application.getCurrentUser().getId());
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -90,19 +89,19 @@ public class ProfileFragment extends Fragment implements TweetInteractionListene
     }
 
     private void loadUserTweets(long userId) {
-        TwitterServiceFactory.getTweetService().getUserTimeline(userId, 20, new Callback<List<Tweet>>() {
+        TwitterServiceFactory.getTweetService().getUserTimeline(userId, 20).enqueue(new Callback<List<Tweet>>() {
             @Override
-            public void success(List<Tweet> tweets, Response response) {
+            public void onResponse(Response<List<Tweet>> response) {
                 application.getProfileTweets().clear();
-                application.getProfileTweets().addAll(tweets);
+                application.getProfileTweets().addAll(response.body());
                 tweetAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(swipeRefreshLayout, "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(swipeRefreshLayout, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -138,15 +137,15 @@ public class ProfileFragment extends Fragment implements TweetInteractionListene
     }
 
     public void fetchUser(long userId){
-        TwitterServiceFactory.getUserService().getUser(userId, new Callback<User>() {
+        TwitterServiceFactory.getUserService().getUser(userId).enqueue(new Callback<User>() {
             @Override
-            public void success(User user, Response response) {
-                showUser(user);
+            public void onResponse(Response<User> response) {
+                showUser(response.body());
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                Snackbar.make(getView(), "Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
+            public void onFailure(Throwable t) {
+                Snackbar.make(getView(), "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
