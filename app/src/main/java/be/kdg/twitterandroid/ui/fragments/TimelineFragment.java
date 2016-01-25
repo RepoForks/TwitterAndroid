@@ -162,7 +162,8 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         Callback<Tweet> updateRetweetedStatus = new Callback<Tweet>() {
             @Override
             public void onResponse(Response<Tweet> response) {
-                tweet.setRetweeted(response.body().isRetweeted());
+                int tweetindex = application.getTweets().indexOf(tweet);
+                application.getTweets().set(tweetindex, response.body());
                 tweetAdapter.notifyDataSetChanged();
             }
 
@@ -184,7 +185,8 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         Callback<Tweet> updateFavoritedStatus = new Callback<Tweet>() {
             @Override
             public void onResponse(Response<Tweet> response) {
-                tweet.setRetweeted(response.body().isRetweeted());
+                int tweetindex = application.getTweets().indexOf(tweet);
+                application.getTweets().set(tweetindex, response.body());
                 tweetAdapter.notifyDataSetChanged();
             }
 
