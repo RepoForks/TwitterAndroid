@@ -45,7 +45,9 @@ public class TwitterServiceFactory {
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
                         Response response = chain.proceed(request);
-                        System.out.println(response.code());
+
+                        System.out.println(String.format("[%d] %s", response.code(), request.url()));
+
                         switch (response.code()) {
                             case 328:
                             case 403:

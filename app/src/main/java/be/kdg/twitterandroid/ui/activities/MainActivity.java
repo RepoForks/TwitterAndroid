@@ -100,18 +100,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         finalheaderbg.setBackground(new BitmapDrawable(getResources(), bitmap));
-                        System.out.println("Bitmap loaded???");
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        System.out.println("Bitmap failed");
-                    }
+                    public void onBitmapFailed(Drawable errorDrawable) { }
 
                     @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        System.out.println("Prepare load");
-                    }
+                    public void onPrepareLoad(Drawable placeHolderDrawable) { }
                 };
                 finalheaderbg.setTag(headerBgTarget);
 
