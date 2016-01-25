@@ -25,7 +25,7 @@ import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
-import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
+import be.kdg.twitterandroid.ui.DefaultTweetInteractionHandler;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,7 +33,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileFragment extends Fragment implements TweetInteractionListener, SwipeRefreshLayout.OnRefreshListener {
+public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.profile_banner)      RelativeLayout profileBanner;
     @Bind(R.id.profile_picture)     CircleImageView profilePicture;
     @Bind(R.id.profile_name)        TextView name;
@@ -70,7 +70,16 @@ public class ProfileFragment extends Fragment implements TweetInteractionListene
     }
 
     private void setupRecyclerView(){
-        tweetAdapter = new TweetAdapter(application.getProfileTweets(), this, getActivity());
+        DefaultTweetInteractionHandler interactionHandler = new DefaultTweetInteractionHandler(
+                application.getProfileTweets(),
+                swipeRefreshLayout
+        );
+        tweetAdapter = new TweetAdapter(
+                application.getProfileTweets(),
+                interactionHandler,
+                getActivity()
+        );
+        interactionHandler.setTweetAdapter(tweetAdapter);
         profileTimeline.setAdapter(tweetAdapter);
         LinearLayoutManager llmanager = new LinearLayoutManager(getActivity());
         profileTimeline.setLayoutManager(llmanager);
@@ -148,35 +157,5 @@ public class ProfileFragment extends Fragment implements TweetInteractionListene
                 Snackbar.make(getView(), "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
-    }
-
-    @Override
-    public void onTweetReplyClick(Tweet tweet) {
-
-    }
-
-    @Override
-    public void onTweetRetweetClick(Tweet tweet) {
-
-    }
-
-    @Override
-    public void onTweetHeartClick(Tweet tweet) {
-
-    }
-
-    @Override
-    public void onTweetMenuClick(Tweet tweet) {
-
-    }
-
-    @Override
-    public void onUserClick(User user) {
-
-    }
-
-    @Override
-    public void onHashtagClick(String hashtag) {
-
     }
 }

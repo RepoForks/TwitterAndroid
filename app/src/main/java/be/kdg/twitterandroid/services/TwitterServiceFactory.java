@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import java.io.IOException;
 
 import be.kdg.twitterandroid.config.Constants;
+import be.kdg.twitterandroid.services.exceptions.NotAllowedException;
 import be.kdg.twitterandroid.services.exceptions.NotFoundException;
 import be.kdg.twitterandroid.services.exceptions.RateLimitExceededException;
 import be.kdg.twitterandroid.services.exceptions.UnauthorizedException;
@@ -44,7 +45,11 @@ public class TwitterServiceFactory {
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
                         Response response = chain.proceed(request);
+                        System.out.println(response.code());
                         switch (response.code()) {
+                            case 328:
+                            case 403:
+                                throw new NotAllowedException();
                             case 401:
                                 throw new UnauthorizedException();
                             case 404:

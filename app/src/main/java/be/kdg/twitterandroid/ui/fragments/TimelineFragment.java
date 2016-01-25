@@ -16,17 +16,16 @@ import java.util.List;
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
-import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
+import be.kdg.twitterandroid.ui.DefaultTweetInteractionHandler;
 import be.kdg.twitterandroid.ui.activities.listeners.EndlessRecyclerOnScrollListener;
-import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TimelineFragment extends Fragment implements TweetInteractionListener {
+public class TimelineFragment extends Fragment {
     @Bind(R.id.list_tweets)          RecyclerView listTweets;
     @Bind(R.id.swiperefresh_tweets)  SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.fab)                  FloatingActionButton fab;
@@ -49,7 +48,6 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         setupFab();
         setupRefreshLayout();
 
-
         if(application.userHasAuthTokens()) refreshTweets();
         return view;
     }
@@ -68,11 +66,16 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
     }
 
     private void setupTimeline(){
+        DefaultTweetInteractionHandler interactionHandler = new DefaultTweetInteractionHandler(
+                application.getTweets(),
+                swipeRefreshLayout
+        );
         tweetAdapter = new TweetAdapter(
                 application.getTweets(), // Tweets
-                this,                    // TweetInteractionListener
+                interactionHandler,      // InteractionHandler
                 getActivity()            // Activity
         );
+        interactionHandler.setTweetAdapter(tweetAdapter);
         listTweets.setAdapter(tweetAdapter);
 
         LinearLayoutManager llmanager = new LinearLayoutManager(getActivity());
@@ -86,7 +89,7 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(dy > 0){
+                if (dy > 0) {
                     fab.hide();
                 } else {
                     fab.show();
@@ -150,71 +153,5 @@ public class TimelineFragment extends Fragment implements TweetInteractionListen
         return application.getTweets()
                 .get(application.getTweets().size() - 1)
                 .getId();
-    }
-
-    @Override
-    public void onTweetReplyClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " reply", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTweetRetweetClick(final Tweet tweet) {
-        Callback<Tweet> updateRetweetedStatus = new Callback<Tweet>() {
-            @Override
-            public void onResponse(Response<Tweet> response) {
-                int tweetindex = application.getTweets().indexOf(tweet);
-                application.getTweets().set(tweetindex, response.body());
-                tweetAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Snackbar.make(swipeRefreshLayout, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        };
-
-        if(tweet.isRetweeted()){
-            TwitterServiceFactory.getTweetService().unretweetTweet(tweet.getId()).enqueue(updateRetweetedStatus);
-        } else {
-            TwitterServiceFactory.getTweetService().retweetTweet(tweet.getId()).enqueue(updateRetweetedStatus);
-        }
-    }
-
-    @Override
-    public void onTweetHeartClick(final Tweet tweet) {
-        Callback<Tweet> updateFavoritedStatus = new Callback<Tweet>() {
-            @Override
-            public void onResponse(Response<Tweet> response) {
-                int tweetindex = application.getTweets().indexOf(tweet);
-                application.getTweets().set(tweetindex, response.body());
-                tweetAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Snackbar.make(swipeRefreshLayout, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        };
-
-        if(tweet.isFavorited()){
-            TwitterServiceFactory.getTweetService().unfavoriteTweet(tweet.getId()).enqueue(updateFavoritedStatus);
-        } else {
-            TwitterServiceFactory.getTweetService().favoriteTweet(tweet.getId()).enqueue(updateFavoritedStatus);
-        }
-    }
-
-    @Override
-    public void onTweetMenuClick(Tweet tweet) {
-        Snackbar.make(listTweets, tweet.getId() + " menu", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onUserClick(User user) {
-        Snackbar.make(listTweets, user.getName() + " clicked", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onHashtagClick(String hashtag) {
-        Snackbar.make(listTweets, "#" + hashtag + " clicked", Snackbar.LENGTH_SHORT).show();
     }
 }
