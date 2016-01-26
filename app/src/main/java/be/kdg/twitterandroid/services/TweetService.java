@@ -63,7 +63,7 @@ public interface TweetService {
     @POST("statuses/update.json")
     Call<Tweet> tweet(
             @Field("status") String status,
-            @Field("in_reply_to_status_id") long in_reply_to_status_id
+            @Field("in_reply_to_status_id") Long in_reply_to_status_id
     );
 
     @POST("statuses/destroy/{id}.json")
