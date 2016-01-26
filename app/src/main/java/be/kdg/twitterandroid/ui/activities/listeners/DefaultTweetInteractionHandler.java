@@ -40,7 +40,8 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
 
     @Override
     public void onTweetReplyClick(Tweet tweet) {
-        Snackbar.make(snackbarView, tweet.getId() + " reply", Snackbar.LENGTH_SHORT).show();
+        if(!(activity instanceof MainActivity)) return;
+        ((MainActivity)activity).showCreateTweetPopupReply(tweet.getId());
     }
 
     @Override

@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AboutFragment aboutFragment;
     private PopupWindow popupCreateTweet;
 
+    private Long tweet_in_reply_to = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 forceCloseKeyboard();
 
                 String escapedTweet = popupTweetText.getText().toString();
-                TwitterServiceFactory.getTweetService().tweet(escapedTweet).enqueue(new Callback<Tweet>() {
+                TwitterServiceFactory.getTweetService().tweet(escapedTweet, tweet_in_reply_to).enqueue(new Callback<Tweet>() {
                     @Override
                     public void onResponse(Response<Tweet> response) {
                         if(response.isSuccess()){
@@ -158,12 +160,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void showCreateTweetPopup(){
         popupTweetText.setText("");
+        tweet_in_reply_to = null;
         Picasso.with(this)
                 .load(application.getCurrentUser().getProfile_image_url())
                 .into(popupProfilePicture);
         popupCreateTweet.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         popupCreateTweet.showAtLocation(navigationView, Gravity.TOP | Gravity.START, 0, 128);
         forceShowKeyboardInPopupWindow();
+    }
+
+    public void showCreateTweetPopupReply(long in_reply_to){
+        showCreateTweetPopup();
+        tweet_in_reply_to = in_reply_to;
     }
 
     private void forceShowKeyboardInPopupWindow(){
