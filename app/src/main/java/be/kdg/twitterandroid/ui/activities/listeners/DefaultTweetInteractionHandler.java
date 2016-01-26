@@ -10,9 +10,11 @@ import android.widget.PopupMenu;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
+import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
+import be.kdg.twitterandroid.ui.activities.MainActivity;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -115,11 +117,19 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
                         break;
 
                     case R.id.item_mute:
-                        muteUser(tweet.getUser());
+                        muteUser(tweet);
+                        break;
+
+                    case R.id.item_unmute:
+                        unmuteUser(tweet);
                         break;
 
                     case R.id.item_block:
-                        blockUser(tweet.getUser());
+                        blockUser(tweet);
+                        break;
+
+                    case R.id.item_unblock:
+                        unblockUser(tweet);
                         break;
 
                     case R.id.item_delete:
@@ -130,16 +140,31 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
                 return false;
             }
         });
+
         menu.inflate(R.menu.menu_tweet);
+        if(tweet.getUser().isMuted()){
+            menu.getMenu().findItem(R.id.item_mute).setVisible(false);
+            menu.getMenu().findItem(R.id.item_unmute).setVisible(true);
+        }
+        if(tweet.getUser().isBlocked()){
+            menu.getMenu().findItem(R.id.item_block).setVisible(false);
+            menu.getMenu().findItem(R.id.item_unblock).setVisible(true);
+        }
+        if(activity instanceof MainActivity && ((TwitterAndroidApplication)activity.getApplication()).getCurrentUser().getId() == tweet.getUser().getId()){
+            menu.getMenu().findItem(R.id.item_delete).setVisible(true);
+        }
         menu.show();
     }
 
-    private void muteUser(User user){
-        TwitterServiceFactory.getUserService().muteUser(user.getId()).enqueue(new Callback<User>() {
+    private void muteUser(Tweet tweet){
+        final int tweetIndex = tweets.indexOf(tweet);
+        TwitterServiceFactory.getUserService().muteUser(tweet.getUser().getId()).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Response<User> response) {
-                if (response.isSuccess())
+                if (response.isSuccess()) {
+                    tweets.get(tweetIndex).getUser().setMuted(true);
                     Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " muted", Snackbar.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -149,16 +174,54 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
         });
     }
 
-    private void blockUser(User user){
-        TwitterServiceFactory.getUserService().blockUser(user.getId()).enqueue(new Callback<User>() {
+    private void unmuteUser(Tweet tweet) {
+        final int tweetIndex = tweets.indexOf(tweet);
+        TwitterServiceFactory.getUserService().unmuteUser(tweet.getUser().getId()).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Response<User> response) {
-                if(response.isSuccess()) Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " blocked", Snackbar.LENGTH_SHORT).show();
+                if (response.isSuccess()) {
+                    tweets.get(tweetIndex).getUser().setMuted(false);
+                    Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " unmuted", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(snackbarView, "Failed to unmute user", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void blockUser(Tweet tweet) {
+        final int tweetIndex = tweets.indexOf(tweet);
+        TwitterServiceFactory.getUserService().blockUser(tweet.getUser().getId()).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response) {
+                if (response.isSuccess())
+                    tweets.get(tweetIndex).getUser().setBlocked(true);
+                    Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " blocked", Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Snackbar.make(snackbarView, "Failed to block user", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void unblockUser(Tweet tweet) {
+        final int tweetIndex = tweets.indexOf(tweet);
+        TwitterServiceFactory.getUserService().unblockUser(tweet.getUser().getId()).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response) {
+                if (response.isSuccess())
+                    tweets.get(tweetIndex).getUser().setBlocked(false);
+                Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " unblocked", Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(snackbarView, "Failed to unblock user", Snackbar.LENGTH_SHORT).show();
             }
         });
     }

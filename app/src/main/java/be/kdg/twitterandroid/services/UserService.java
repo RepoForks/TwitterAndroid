@@ -28,6 +28,16 @@ public interface UserService {
             @Query("screen_name") String screenName
     );
 
+    @POST("blocks/destroy.json")
+    Call<User> unblockUser(
+            @Query("user_id") long userId
+    );
+
+    @POST("blocks/destroy.json")
+    Call<User> unblockUser(
+            @Query("screen_name") String screenName
+    );
+
     @POST("mutes/users/create.json")
     Call<User> muteUser(
             @Query("user_id") long userId
@@ -35,6 +45,16 @@ public interface UserService {
 
     @POST("mutes/users/create.json")
     Call<User> muteUser(
+            @Query("screen_name") String screenName
+    );
+
+    @POST("mutes/users/destroy.json")
+    Call<User> unmuteUser(
+            @Query("user_id") long userId
+    );
+
+    @POST("mutes/users/destroy.json")
+    Call<User> unmuteUser(
             @Query("screen_name") String screenName
     );
 }

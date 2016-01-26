@@ -15,14 +15,26 @@
         android:visible="true"/>
 
     <item
+        android:id="@+id/item_unmute"
+        app:showAsAction="ifRoom|withText"
+        android:title="Unmute"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/item_block"
         app:showAsAction="ifRoom|withText"
         android:title="Block"
         android:visible="true"/>
 
     <item
+        android:id="@+id/item_unblock"
+        app:showAsAction="ifRoom|withText"
+        android:title="Unblock"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/item_delete"
         app:showAsAction="ifRoom|withText"
         android:title="Delete"
-        android:visible="true"/>
+        android:visible="false"/>
 </menu>

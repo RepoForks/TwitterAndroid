@@ -18,7 +18,9 @@ public class User {
             profile_use_background_image,
             _protected, // "protected" is a forbidden variable name as it is a keyword
             show_all_inline_media,
-            verified;
+            verified,
+            muted,
+            blocked;
 
     private String id_str,
             created_at,
@@ -145,6 +147,14 @@ public class User {
         return _protected;
     }
 
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
     public void set_protected(boolean _protected) {
         this._protected = _protected;
     }
@@ -159,6 +169,14 @@ public class User {
 
     public boolean isVerified() {
         return verified;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     public void setVerified(boolean verified) {

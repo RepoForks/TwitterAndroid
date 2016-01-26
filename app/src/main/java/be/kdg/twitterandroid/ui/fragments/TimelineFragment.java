@@ -151,6 +151,10 @@ public class TimelineFragment extends Fragment {
         });
     }
 
+    public void notifyAdapterDataSetChanged(){
+        tweetAdapter.notifyDataSetChanged();
+    }
+
     private long getLastTweetId(){
         return application.getTweets()
                 .get(application.getTweets().size() - 1)

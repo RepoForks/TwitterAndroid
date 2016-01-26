@@ -127,7 +127,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TwitterServiceFactory.getTweetService().tweet(escapedTweet).enqueue(new Callback<Tweet>() {
                     @Override
                     public void onResponse(Response<Tweet> response) {
-                        if(response.isSuccess()) Snackbar.make(frameLayout, "Tweet posted", Snackbar.LENGTH_SHORT).show();
+                        if(response.isSuccess()){
+                            application.getTweets().add(0, response.body());
+                            timelineFragment.notifyAdapterDataSetChanged();
+                            Snackbar.make(frameLayout, "Tweet posted", Snackbar.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
