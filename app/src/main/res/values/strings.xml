@@ -6,8 +6,7 @@
 
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="about_paragraph1">TwitterAndroid is a twitter client written in Java, to demonstrate the differences between native android development and Xamarin.</string>
-    <string name="about_paragraph2">Made in context of the paper, \'Xamarin vs native\', by Maarten Van Giel, Ignace Maes, Matthias Heylen en Mathisse Destrooper</string>
+    <string name="about_paragraph2">Made in context of the paper, \'Xamarin: wondermiddel of te goed om waar te zijn?\', by Maarten Van Giel, Ignace Maes, Matthias Heylen en Mathisse De Strooper</string>
+    <string name="used_libraries">- Retrofit 2 by Square, Inc.\n- Signpost by Matthias Käppler\n- OkHttp-signpost by Patrik Åkerfeldt\n- ButterKnife by Jake Wharton\n- Picasso by Square, Inc.\n- CircleImageView by Henning Dodenhof</string>
 </resources>
