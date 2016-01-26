@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fefefe"
+    android:padding="8dp"
+    tools:context="be.kdg.twitterandroid.ui.activities.CreateTweetActivity">
+
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_pic"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_alignParentRight="true" />
+
+    <EditText
+        android:id="@+id/tweet_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_tweet"
+        android:layout_below="@id/profile_pic"
+        android:gravity="start"
+        android:hint="What's happening?"
+        android:textAlignment="viewStart"
+        android:maxLength="140"/>
+
+    <TextView
+        android:id="@+id/chars_remaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_tweet"
+        android:layout_below="@id/tweet_text"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/btn_tweet"
+        android:text="140" />
+
+    <Button
+        android:id="@+id/btn_tweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Tweet"
+        android:textColor="#fff" />
+
+</RelativeLayout>

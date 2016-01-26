@@ -26,6 +26,7 @@ import be.kdg.twitterandroid.domain.Entities;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.utils.DateHelper;
+import be.kdg.twitterandroid.utils.StringUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -109,7 +110,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
 
         final Tweet displayedTweet = (tweet.getRetweeted_status() == null) ? tweet : tweet.getRetweeted_status();
-        String tweetBodyText = getTweetBodyWithoutPhotoUrls(displayedTweet);
+        String tweetBodyText = StringUtils.unescapeHtml3(getTweetBodyWithoutPhotoUrls(displayedTweet));
         SpannableString tweetBody = new SpannableString(tweetBodyText);
         for(final Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
             tweetBody.setSpan(

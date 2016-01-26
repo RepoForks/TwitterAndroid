@@ -1,7 +1,5 @@
 package be.kdg.twitterandroid.utils;
 
-import android.text.format.DateUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,21 +19,14 @@ public final class DateHelper {
         try {
             Date date = dateFormat.parse(twitterDateString);
             Date now = new Date();
-            long delta = (now.getTime() - date.getTime()) / (1000 * 60 * 60); // delta in hours
+            long delta = (now.getTime() - date.getTime()) / (1000 * 60); // delta in minutes
 
-            if(delta < 1)
-            {
-                long minuteDelta = (now.getTime() - date.getTime()) / (1000 * 60); // delta in minutes
-                return minuteDelta + "m";
-            }
-            if(delta < 24)
-                return delta + "h";
-            if(delta > 168)
-                return (delta / 168) + "wk";
-            if(delta >= 24)
-                return (delta / 24) + "d";
+            if(delta < 1) return "now";
+            else if(delta > 1 && delta < 60) return delta + "m";
+            else if(delta > 60 && delta < 24 * 60) return delta + "h";
+            else if(delta > 24 * 60 && delta < 24 * 60 * 7) return delta + "d";
+            else return delta + "wk";
 
-            return DateUtils.getRelativeTimeSpanString(date.getTime()).toString();
         } catch (ParseException e) {
             e.printStackTrace();
             return null;

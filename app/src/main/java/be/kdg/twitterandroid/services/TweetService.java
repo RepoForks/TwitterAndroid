@@ -4,6 +4,8 @@ import java.util.List;
 
 import be.kdg.twitterandroid.domain.Tweet;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -49,5 +51,18 @@ public interface TweetService {
     @POST("favorites/destroy.json")
     Call<Tweet> unfavoriteTweet(
             @Query("id") long tweetId
+    );
+
+    @FormUrlEncoded
+    @POST("statuses/update.json")
+    Call<Tweet> tweet(
+            @Field("status") String status
+    );
+
+    @FormUrlEncoded
+    @POST("statuses/update.json")
+    Call<Tweet> tweet(
+            @Field("status") String status,
+            @Query("in_reply_to_status_id") String in_reply_to_status_id
     );
 }

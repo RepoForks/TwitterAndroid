@@ -1,5 +1,6 @@
 package be.kdg.twitterandroid.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,11 +15,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -26,6 +36,7 @@ import com.squareup.picasso.Target;
 
 import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.TwitterAndroidApplication;
+import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.services.UserService;
@@ -49,12 +60,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CircleImageView imgHeaderProfilePic;
     LinearLayout navHeaderBg;
 
+    EditText popupTweetText;
+    TextView popupCharactersRemaining;
+    ImageView popupProfilePicture;
+
     private static final int REQ_AUTH = 0;
 
     private TwitterAndroidApplication application;
     private TimelineFragment timelineFragment;
     private ProfileFragment profileFragment;
     private AboutFragment aboutFragment;
+    private PopupWindow popupCreateTweet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupFragments();
         setupNavigationMenu();
+        setupPopupWindow();
 
         if(!application.userHasAuthTokens()){
             Intent authIntent = new Intent(this, TwitterAuthActivity.class);
@@ -72,6 +89,89 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             fetchCurrentUser();
         }
+    }
+
+    private void setupPopupWindow() {
+        LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.popup_create_tweet, null);
+
+        popupTweetText = (EditText) view.findViewById(R.id.tweet_text);
+        popupProfilePicture = (ImageView) view.findViewById(R.id.profile_pic);
+        popupCharactersRemaining = (TextView) view.findViewById(R.id.chars_remaining);
+        ImageView btnClosePopup = (ImageView) view.findViewById(R.id.btn_close);
+        Button btnTweet = (Button) view.findViewById(R.id.btn_tweet);
+
+        popupTweetText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                popupCharactersRemaining.setText(String.valueOf(140 - popupTweetText.getText().length()));
+                return false;
+            }
+        });
+
+        btnClosePopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupCreateTweet.dismiss();
+                forceCloseKeyboard();
+            }
+        });
+
+        btnTweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupCreateTweet.dismiss();
+                forceCloseKeyboard();
+
+                String escapedTweet = popupTweetText.getText().toString();
+                TwitterServiceFactory.getTweetService().tweet(escapedTweet).enqueue(new Callback<Tweet>() {
+                    @Override
+                    public void onResponse(Response<Tweet> response) {
+                        if(response.isSuccess()) Snackbar.make(frameLayout, "Tweet posted", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Snackbar.make(frameLayout, "Error posting tweet: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
+        popupCreateTweet = new PopupWindow(
+                view,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                true
+        );
+        popupCreateTweet.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popupCreateTweet.setAnimationStyle(android.R.style.Animation_Dialog);
+        popupCreateTweet.setFocusable(true);
+        popupCreateTweet.setOutsideTouchable(true);
+        popupCreateTweet.setBackgroundDrawable(new BitmapDrawable());
+        popupCreateTweet.update();
+    }
+
+    public void showCreateTweetPopup(){
+        popupTweetText.setText("");
+        Picasso.with(this)
+                .load(application.getCurrentUser().getProfile_image_url())
+                .into(popupProfilePicture);
+        popupCreateTweet.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        popupCreateTweet.showAtLocation(navigationView, Gravity.TOP | Gravity.START, 0, 128);
+        forceShowKeyboardInPopupWindow();
+    }
+
+    private void forceShowKeyboardInPopupWindow(){
+        InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        inputMgr.showSoftInput(popupCreateTweet.getContentView(), InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    private void forceCloseKeyboard(){
+        InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMgr.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        inputMgr.showSoftInput(popupCreateTweet.getContentView(), InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private void fetchCurrentUser() {
@@ -162,11 +262,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        else
             super.onBackPressed();
-        }
     }
 
     @Override

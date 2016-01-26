@@ -18,6 +18,7 @@ import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.ui.DefaultTweetInteractionHandler;
+import be.kdg.twitterandroid.ui.activities.MainActivity;
 import be.kdg.twitterandroid.ui.activities.listeners.EndlessRecyclerOnScrollListener;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import butterknife.Bind;
@@ -62,7 +63,7 @@ public class TimelineFragment extends Fragment {
     }
 
     private void onFabClick() {
-        Snackbar.make(swipeRefreshLayout, "New tweet", Snackbar.LENGTH_SHORT).show();
+        ((MainActivity)getActivity()).showCreateTweetPopup();
     }
 
     private void setupTimeline(){
