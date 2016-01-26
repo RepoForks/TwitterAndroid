@@ -262,4 +262,8 @@ public class Tweet {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public String getShareURL(){
+        return String.format("https://twitter.com/%s/status/%d", getUser().getScreen_name(), getId());
+    }
 }

@@ -23,9 +23,9 @@ public final class DateHelper {
 
             if(delta < 1) return "now";
             else if(delta > 1 && delta < 60) return delta + "m";
-            else if(delta > 60 && delta < 24 * 60) return delta + "h";
-            else if(delta > 24 * 60 && delta < 24 * 60 * 7) return delta + "d";
-            else return delta + "wk";
+            else if(delta > 60 && delta < 24 * 60) return delta / 60 + "h";
+            else if(delta > 24 * 60 && delta < 24 * 60 * 7) return delta / 60 / 24 + "d";
+            else return delta / 60 / 24 / 7 + "wk";
 
         } catch (ParseException e) {
             e.printStackTrace();

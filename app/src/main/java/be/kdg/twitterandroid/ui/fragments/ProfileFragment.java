@@ -25,7 +25,7 @@ import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
-import be.kdg.twitterandroid.ui.DefaultTweetInteractionHandler;
+import be.kdg.twitterandroid.ui.activities.listeners.DefaultTweetInteractionHandler;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -72,7 +72,8 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private void setupRecyclerView(){
         DefaultTweetInteractionHandler interactionHandler = new DefaultTweetInteractionHandler(
                 application.getProfileTweets(),
-                swipeRefreshLayout
+                swipeRefreshLayout,
+                getActivity()
         );
         tweetAdapter = new TweetAdapter(
                 application.getProfileTweets(),

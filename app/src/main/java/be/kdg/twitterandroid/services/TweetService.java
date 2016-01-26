@@ -65,4 +65,9 @@ public interface TweetService {
             @Field("status") String status,
             @Query("in_reply_to_status_id") String in_reply_to_status_id
     );
+
+    @POST("statuses/destroy/{id}.json")
+    Call<Tweet> deleteTweet(
+            @Path("id") long tweetId
+    );
 }

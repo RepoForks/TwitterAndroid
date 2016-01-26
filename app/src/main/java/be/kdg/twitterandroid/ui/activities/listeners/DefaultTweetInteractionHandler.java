@@ -1,14 +1,18 @@
-package be.kdg.twitterandroid.ui;
+package be.kdg.twitterandroid.ui.activities.listeners;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import java.util.List;
 
+import be.kdg.twitterandroid.R;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
-import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,10 +24,12 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
     private TweetAdapter tweetAdapter;
     private View snackbarView;
     private List<Tweet> tweets;
+    private Activity activity;
 
-    public DefaultTweetInteractionHandler(List<Tweet> tweets, View snackbarView) {
+    public DefaultTweetInteractionHandler(List<Tweet> tweets, View snackbarView, Activity activity) {
         this.tweets = tweets;
         this.snackbarView = snackbarView;
+        this.activity = activity;
     }
 
     public void setTweetAdapter(TweetAdapter tweetAdapter) {
@@ -94,8 +100,88 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
     }
 
     @Override
-    public void onTweetMenuClick(Tweet tweet) {
-        Snackbar.make(snackbarView, tweet.getId() + " menu", Snackbar.LENGTH_SHORT).show();
+    public void onTweetMenuClick(final Tweet tweet, View view) {
+        PopupMenu menu = new PopupMenu(snackbarView.getContext(), view);
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.item_share:
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, tweet.getShareURL());
+                        sendIntent.setType("text/plain");
+                        activity.startActivity(sendIntent);
+                        break;
+
+                    case R.id.item_mute:
+                        muteUser(tweet.getUser());
+                        break;
+
+                    case R.id.item_block:
+                        blockUser(tweet.getUser());
+                        break;
+
+                    case R.id.item_delete:
+                        deleteTweet(tweet);
+                        break;
+                }
+
+                return false;
+            }
+        });
+        menu.inflate(R.menu.menu_tweet);
+        menu.show();
+    }
+
+    private void muteUser(User user){
+        TwitterServiceFactory.getUserService().muteUser(user.getId()).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response) {
+                if (response.isSuccess())
+                    Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " muted", Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(snackbarView, "Failed to mute user", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void blockUser(User user){
+        TwitterServiceFactory.getUserService().blockUser(user.getId()).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response) {
+                if(response.isSuccess()) Snackbar.make(snackbarView, "User " + response.body().getScreen_name() + " blocked", Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(snackbarView, "Failed to block user", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void deleteTweet(Tweet tweet){
+        final int tweetindex = tweets.indexOf(tweet);
+        TwitterServiceFactory.getTweetService().deleteTweet(tweet.getId()).enqueue(new Callback<Tweet>() {
+            @Override
+            public void onResponse(Response<Tweet> response) {
+                if(response.isSuccess()){
+                    tweets.remove(tweetindex);
+                    tweetAdapter.notifyDataSetChanged();
+                    Snackbar.make(snackbarView, "Tweet successfully deleted", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(snackbarView, "Failed to delete tweet", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(snackbarView, "Error: " + t.getMessage(), Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

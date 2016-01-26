@@ -110,7 +110,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
 
         final Tweet displayedTweet = (tweet.getRetweeted_status() == null) ? tweet : tweet.getRetweeted_status();
-        String tweetBodyText = StringUtils.unescapeHtml3(getTweetBodyWithoutPhotoUrls(displayedTweet));
+        String tweetBodyText = StringUtils.unescapeHtml3(trimTweetBodyPhotoURL(displayedTweet));
         SpannableString tweetBody = new SpannableString(tweetBodyText);
         for(final Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
             tweetBody.setSpan(
@@ -217,7 +217,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         tweetView.btnTweetMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                interactionListener.onTweetMenuClick(tweet);
+                interactionListener.onTweetMenuClick(tweet, view);
             }
         });
         tweetView.tweetUsername.setOnClickListener(new View.OnClickListener() {
@@ -246,7 +246,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         });
     }
 
-    private String getTweetBodyWithoutPhotoUrls(Tweet tweet){
+    private String trimTweetBodyPhotoURL(Tweet tweet){
         String tweetBody = tweet.getText();
         if(tweet.getEntities().getMedia() != null && tweet.getEntities().getMedia().length > 0){
             for(Entities.MediaEntity mediaEntity : tweet.getEntities().getMedia()){
