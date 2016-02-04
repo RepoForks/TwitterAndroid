@@ -100,8 +100,8 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(dy > 0) collapseHeader();
-                if(dy < 0) expandHeader();
+                if(dy > 6) collapseHeader();
+                if(dy < -6) expandHeader();
             }
         });
     }
