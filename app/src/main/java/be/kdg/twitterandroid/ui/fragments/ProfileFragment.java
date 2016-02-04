@@ -18,10 +18,10 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import be.kdg.twitterandroid.R;
-import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
@@ -44,8 +44,14 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Bind(R.id.profile_timeline)    RecyclerView profileTimeline;
     @Bind(R.id.swiperefresh_profile)  SwipeRefreshLayout swipeRefreshLayout;
 
-    private TwitterAndroidApplication application;
+    private User user;
+    private List<Tweet> userTweets;
     private TweetAdapter tweetAdapter;
+    private long userId;
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,7 +68,7 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        application = (TwitterAndroidApplication) getActivity().getApplication();
+        userTweets = new ArrayList<>();
     }
 
     private void setupRefreshLayout() {
@@ -71,12 +77,12 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void setupRecyclerView(){
         DefaultTweetInteractionHandler interactionHandler = new DefaultTweetInteractionHandler(
-                application.getProfileTweets(),
+                userTweets,
                 swipeRefreshLayout,
                 getActivity()
         );
         tweetAdapter = new TweetAdapter(
-                application.getProfileTweets(),
+                userTweets,
                 interactionHandler,
                 getActivity()
         );
@@ -88,8 +94,8 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-        showUser(application.getCurrentUser());
-        loadUserTweets(application.getCurrentUser().getId());
+        loadUser(userId);
+        loadUserTweets(userId);
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -102,8 +108,8 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
         TwitterServiceFactory.getTweetService().getUserTimeline(userId, 20).enqueue(new Callback<List<Tweet>>() {
             @Override
             public void onResponse(Response<List<Tweet>> response) {
-                application.getProfileTweets().clear();
-                application.getProfileTweets().addAll(response.body());
+                userTweets.clear();
+                userTweets.addAll(response.body());
                 tweetAdapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -116,47 +122,50 @@ public class ProfileFragment extends Fragment implements SwipeRefreshLayout.OnRe
         });
     }
 
+    public void loadUser(long userId){
+        TwitterServiceFactory.getUserService().getUser(userId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response) {
+                user = response.body();
+                showUser(user);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(swipeRefreshLayout, "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
     public void showUser(User user){
         name.setText(user.getName());
         screenName.setText("@" + user.getScreen_name());
         tweets.setText(String.valueOf(user.getStatuses_count()));
         following.setText(String.valueOf(user.getFriends_count()));
         followers.setText(String.valueOf(user.getFollowers_count()));
+        getActivity().setTitle(user.getName());
 
         Picasso.with(getActivity())
                 .load(user.getProfile_image_url())
                 .into(profilePicture);
-
-        final RelativeLayout finalProfileBanner = profileBanner;
-        final Target bannerTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                finalProfileBanner.setBackground(new BitmapDrawable(getResources(), bitmap));
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) { }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) { }
-        };
 
         Picasso.with(getActivity())
                 .load(user.getProfile_banner_url())
                 .into(bannerTarget);
     }
 
-    public void fetchUser(long userId){
-        TwitterServiceFactory.getUserService().getUser(userId).enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Response<User> response) {
-                showUser(response.body());
-            }
+    final Target bannerTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            profileBanner.setBackground(new BitmapDrawable(getResources(), bitmap));
+        }
 
-            @Override
-            public void onFailure(Throwable t) {
-                Snackbar.make(getView(), "Error: " + t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            Snackbar.make(swipeRefreshLayout, "Bitmap failed", Snackbar.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) { }
+    };
 }

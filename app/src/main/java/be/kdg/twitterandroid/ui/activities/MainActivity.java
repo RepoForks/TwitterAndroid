@@ -307,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = timelineFragment;
         switch(id){
             case R.id.nav_profile:
+                profileFragment.setUserId(application.getCurrentUser().getId());
                 fragment = profileFragment;
                 break;
 

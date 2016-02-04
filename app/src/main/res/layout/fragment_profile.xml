@@ -17,7 +17,7 @@
             android:layout_height="64dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:src="@android:drawable/sym_def_app_icon" />
+            android:src="@drawable/account_circle" />
 
         <TextView
             android:id="@+id/profile_name"

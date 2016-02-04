@@ -15,6 +15,7 @@ import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
 import be.kdg.twitterandroid.ui.activities.MainActivity;
+import be.kdg.twitterandroid.ui.activities.ProfileActivity;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -250,7 +251,9 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
 
     @Override
     public void onUserClick(User user) {
-        Snackbar.make(snackbarView, user.getName() + " clicked", Snackbar.LENGTH_SHORT).show();
+        Intent intent = new Intent(activity, ProfileActivity.class);
+        intent.putExtra("userId", user.getId());
+        activity.startActivity(intent);
     }
 
     @Override
