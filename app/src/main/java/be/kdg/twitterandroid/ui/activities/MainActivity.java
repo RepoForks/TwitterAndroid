@@ -186,6 +186,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         inputMgr.showSoftInput(popupCreateTweet.getContentView(), InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
+    private void showUser(User user){
+        txtHeaderScreenName.setText("@" + user.getScreen_name());
+        txtHeaderName.setText(user.getName());
+
+        Picasso.with(MainActivity.this)
+                .load(user.getProfile_image_url())
+                .into(imgHeaderProfilePic);
+
+        final LinearLayout finalheaderbg = navHeaderBg;
+        final Target headerBgTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                finalheaderbg.setBackground(new BitmapDrawable(getResources(), bitmap));
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) { }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) { }
+        };
+        finalheaderbg.setTag(headerBgTarget);
+
+        Picasso.with(MainActivity.this)
+                .load(user.getProfile_banner_url())
+                .into(headerBgTarget);
+    }
+
     private void fetchCurrentUser() {
         UserService userService = TwitterServiceFactory.getUserService();
         userService.getCurrentUser().enqueue(new Callback<User>() {
@@ -197,34 +225,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 User user = response.body();
-
                 application.setCurrentUser(user);
-
-                txtHeaderScreenName.setText("@" + user.getScreen_name());
-                txtHeaderName.setText(user.getName());
-
-                Picasso.with(MainActivity.this)
-                        .load(user.getProfile_image_url())
-                        .into(imgHeaderProfilePic);
-
-                final LinearLayout finalheaderbg = navHeaderBg;
-                final Target headerBgTarget = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        finalheaderbg.setBackground(new BitmapDrawable(getResources(), bitmap));
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) { }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) { }
-                };
-                finalheaderbg.setTag(headerBgTarget);
-
-                Picasso.with(MainActivity.this)
-                        .load(user.getProfile_banner_url())
-                        .into(headerBgTarget);
+                showUser(user);
             }
 
             @Override
@@ -266,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (requestCode) {
             case REQ_AUTH:
+                fetchCurrentUser();
                 timelineFragment.refreshTweets();
                 break;
         }
