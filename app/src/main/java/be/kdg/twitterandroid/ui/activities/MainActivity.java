@@ -15,8 +15,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -103,11 +104,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView btnClosePopup = (ImageView) view.findViewById(R.id.btn_close);
         Button btnTweet = (Button) view.findViewById(R.id.btn_tweet);
 
-        popupTweetText.setOnKeyListener(new View.OnKeyListener() {
+        popupTweetText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                popupCharactersRemaining.setText(String.valueOf(140 - popupTweetText.getText().length()));
-                return false;
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                popupCharactersRemaining.setText(String.valueOf(140 - editable.length()));
             }
         });
 
@@ -129,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 TwitterServiceFactory.getTweetService().tweet(escapedTweet, tweet_in_reply_to).enqueue(new Callback<Tweet>() {
                     @Override
                     public void onResponse(Response<Tweet> response) {
-                        if(response.isSuccess()){
+                        if (response.isSuccess()) {
                             application.getTweets().add(0, response.body());
                             timelineFragment.notifyAdapterDataSetChanged();
                             Snackbar.make(frameLayout, "Tweet posted", Snackbar.LENGTH_SHORT).show();
