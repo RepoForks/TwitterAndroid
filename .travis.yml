@@ -8,6 +8,7 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.2"
 android:
   components:
+    - tools
     - build-tools-23.0.2
     - android-23
 before_install:
