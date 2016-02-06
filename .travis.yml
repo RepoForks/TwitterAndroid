@@ -9,7 +9,8 @@ dependencies:
 android:
   components:
     - tools
+	- android-23
     - build-tools-23.0.2
-    - android-23
+	- extra-android-m2repository
 before_install:
   - chmod +x gradlew
