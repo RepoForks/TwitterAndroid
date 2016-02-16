@@ -250,7 +250,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         String tweetBody = tweet.getText();
         if(tweet.getEntities().getMedia() != null && tweet.getEntities().getMedia().length > 0){
             for(Entities.MediaEntity mediaEntity : tweet.getEntities().getMedia()){
-                if (tweetBody.endsWith(mediaEntity.getUrl())) {
+                if (mediaEntity.getType().equals("photo") && tweetBody.endsWith(mediaEntity.getUrl())) {
                     tweetBody = tweetBody.substring(0, tweetBody.length() - mediaEntity.getUrl().length());
                 }
             }
