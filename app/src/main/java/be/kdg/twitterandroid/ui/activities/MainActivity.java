@@ -175,8 +175,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         forceShowKeyboardInPopupWindow();
     }
 
-    public void showCreateTweetPopupReply(long in_reply_to){
+    public void showCreateTweetPopupReply(long in_reply_to, String username){
         showCreateTweetPopup();
+        popupTweetText.setText("@" + username + " ");
+        popupTweetText.setSelection(popupTweetText.getText().length());
         tweet_in_reply_to = in_reply_to;
     }
 

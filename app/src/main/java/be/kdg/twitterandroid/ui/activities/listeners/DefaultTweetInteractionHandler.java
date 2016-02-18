@@ -42,7 +42,7 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
     @Override
     public void onTweetReplyClick(Tweet tweet) {
         if(!(activity instanceof MainActivity)) return;
-        ((MainActivity)activity).showCreateTweetPopupReply(tweet.getId());
+        ((MainActivity)activity).showCreateTweetPopupReply(tweet.getId(), tweet.getUser().getScreen_name());
     }
 
     @Override
