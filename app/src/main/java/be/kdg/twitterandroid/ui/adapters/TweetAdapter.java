@@ -113,6 +113,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         String tweetBodyText = StringUtils.unescapeHtml3(trimTweetBodyPhotoURL(displayedTweet));
         SpannableString tweetBody = new SpannableString(tweetBodyText);
         for(final Entities.HashTagEntity hashtag : displayedTweet.getEntities().getHashtags()){
+            if(tweetBody.length() >= hashtag.getIndices()[0] && tweetBody.length() >= hashtag.getIndices()[1])
             tweetBody.setSpan(
                     new DarkClickableSpan() {
                         @Override
@@ -126,6 +127,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             );
         }
         for(final Entities.UserMentionsEntity userMention : displayedTweet.getEntities().getUser_mentions()){
+            if(tweetBody.length() >= userMention.getIndices()[0] && tweetBody.length() >= userMention.getIndices()[1])
             tweetBody.setSpan(
                     new DarkClickableSpan() {
                         @Override
@@ -143,6 +145,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
             );
         }
         for(final Entities.UrlEntity url : displayedTweet.getEntities().getUrls()){
+            if(tweetBody.length() >= url.getIndices()[0] && tweetBody.length() >= url.getIndices()[1])
             tweetBody.setSpan(
                     new ClickableSpan() {
                         @Override

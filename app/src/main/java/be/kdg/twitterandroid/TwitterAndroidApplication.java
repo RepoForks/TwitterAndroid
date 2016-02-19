@@ -18,13 +18,18 @@ public class TwitterAndroidApplication extends Application {
     private User currentUser;
     private List<Tweet> tweets;
     private List<Tweet> profileTweets;
+    private List<Tweet> hashtagTweets;
 
     public List<Tweet> getProfileTweets() {
         return profileTweets;
     }
 
-    public void setProfileTweets(List<Tweet> profileTweets) {
-        this.profileTweets = profileTweets;
+    public List<Tweet> getHashtagTweets() {
+        return hashtagTweets;
+    }
+
+    public void setHashtagTweets(List<Tweet> hashtagTweets) {
+        this.hashtagTweets = hashtagTweets;
     }
 
     public User getCurrentUser() {
@@ -39,10 +44,6 @@ public class TwitterAndroidApplication extends Application {
         return tweets;
     }
 
-    public void setTweets(List<Tweet> tweets) {
-        this.tweets = tweets;
-    }
-
     public boolean userHasAuthTokens(){
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPrefs.contains("token") && sharedPrefs.contains("tokenSecret");
@@ -53,6 +54,7 @@ public class TwitterAndroidApplication extends Application {
         super.onCreate();
         this.tweets = new ArrayList<>();
         this.profileTweets = new ArrayList<>();
+        this.hashtagTweets = new ArrayList<>();
 
         if(userHasAuthTokens()){
             TwitterServiceFactory.setOAuthTokensFromSharedPreferences(this);

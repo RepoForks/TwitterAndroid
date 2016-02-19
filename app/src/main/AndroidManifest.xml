@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.TwitterAuthActivity" />
-        <activity android:name=".ui.activities.ProfileActivity"></activity>
+        <activity android:name=".ui.activities.ProfileActivity" />
+        <activity android:name=".ui.activities.HashtagActivity"></activity>
     </application>
 
 </manifest>

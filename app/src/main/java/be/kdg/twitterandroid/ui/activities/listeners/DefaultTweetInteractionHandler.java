@@ -14,6 +14,7 @@ import be.kdg.twitterandroid.TwitterAndroidApplication;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
 import be.kdg.twitterandroid.services.TwitterServiceFactory;
+import be.kdg.twitterandroid.ui.activities.HashtagActivity;
 import be.kdg.twitterandroid.ui.activities.MainActivity;
 import be.kdg.twitterandroid.ui.activities.ProfileActivity;
 import be.kdg.twitterandroid.ui.adapters.TweetAdapter;
@@ -258,6 +259,8 @@ public class DefaultTweetInteractionHandler implements TweetInteractionListener 
 
     @Override
     public void onHashtagClick(String hashtag) {
-        Snackbar.make(snackbarView, "#" + hashtag + " clicked", Snackbar.LENGTH_SHORT).show();
+        Intent intent = new Intent(activity, HashtagActivity.class);
+        intent.putExtra("hashtag", hashtag);
+        activity.startActivity(intent);
     }
 }

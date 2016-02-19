@@ -2,6 +2,7 @@ package be.kdg.twitterandroid.services;
 
 import java.util.List;
 
+import be.kdg.twitterandroid.domain.SearchResponse;
 import be.kdg.twitterandroid.domain.Tweet;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -69,5 +70,11 @@ public interface TweetService {
     @POST("statuses/destroy/{id}.json")
     Call<Tweet> deleteTweet(
             @Path("id") long tweetId
+    );
+
+    @GET("search/tweets.json")
+    Call<SearchResponse> searchTweets(
+            @Query("q") String query,
+            @Query("count") int count
     );
 }
