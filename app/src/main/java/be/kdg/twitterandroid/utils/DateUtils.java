@@ -8,9 +8,9 @@ import java.util.Locale;
 /**
  * Created by Maarten on 23/01/2016.
  */
-public final class DateHelper {
+public final class DateUtils {
 
-    private DateHelper(){}
+    private DateUtils(){}
 
     public static String getSimpleDateString(String twitterDateString){
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);

@@ -12,17 +12,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,19 +54,24 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    @Bind(R.id.toolbar)          Toolbar toolbar;
-    @Bind(R.id.drawer_layout)    DrawerLayout drawer;
-    @Bind(R.id.nav_view)         NavigationView navigationView;
-    @Bind(R.id.framelayout_main) FrameLayout frameLayout;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @Bind(R.id.nav_view)
+    NavigationView navigationView;
+    @Bind(R.id.framelayout_main)
+    FrameLayout frameLayout;
 
-    TextView txtHeaderScreenName;
-    TextView txtHeaderName;
-    CircleImageView imgHeaderProfilePic;
-    LinearLayout navHeaderBg;
+    private TextView txtHeaderScreenName;
+    private TextView txtHeaderName;
+    private CircleImageView imgHeaderProfilePic;
+    private LinearLayout navHeaderBg;
 
-    EditText popupTweetText;
-    TextView popupCharactersRemaining;
-    ImageView popupProfilePicture;
+    private EditText popupTweetText;
+    private TextView popupCharactersRemaining;
+    private ImageView popupProfilePicture;
+    private EditText editSearch;
 
     private static final int REQ_AUTH = 0;
 
@@ -74,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private PopupWindow popupCreateTweet;
 
     private Long tweet_in_reply_to = null;
+
+    private MenuItem mSearchAction;
+    private boolean searchOpened;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavigationMenu();
         setupPopupWindow();
 
-        if(!application.userHasAuthTokens()){
+        if (!application.userHasAuthTokens()) {
             Intent authIntent = new Intent(this, TwitterAuthActivity.class);
             startActivityForResult(authIntent, REQ_AUTH);
         } else {
@@ -95,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupPopupWindow() {
-        LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.popup_create_tweet, null);
 
         popupTweetText = (EditText) view.findViewById(R.id.tweet_text);
@@ -106,10 +117,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         popupTweetText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -164,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         popupCreateTweet.update();
     }
 
-    public void showCreateTweetPopup(){
+    public void showCreateTweetPopup() {
         popupTweetText.setText("");
         tweet_in_reply_to = null;
         Picasso.with(this)
@@ -175,26 +188,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         forceShowKeyboardInPopupWindow();
     }
 
-    public void showCreateTweetPopupReply(long in_reply_to, String username){
+    public void showCreateTweetPopupReply(long in_reply_to, String username) {
         showCreateTweetPopup();
         popupTweetText.setText("@" + username + " ");
         popupTweetText.setSelection(popupTweetText.getText().length());
         tweet_in_reply_to = in_reply_to;
     }
 
-    private void forceShowKeyboardInPopupWindow(){
-        InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+    private void forceShowKeyboardInPopupWindow() {
+        InputMethodManager inputMgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         inputMgr.showSoftInput(popupCreateTweet.getContentView(), InputMethodManager.SHOW_IMPLICIT);
     }
 
-    private void forceCloseKeyboard(){
-        InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+    private void forceCloseKeyboard() {
+        InputMethodManager inputMgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMgr.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         inputMgr.showSoftInput(popupCreateTweet.getContentView(), InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    private void showUser(User user){
+    private void showUser(User user) {
         txtHeaderScreenName.setText("@" + user.getScreen_name());
         txtHeaderName.setText(user.getName());
 
@@ -210,10 +223,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) { }
+            public void onBitmapFailed(Drawable errorDrawable) {
+            }
 
             @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) { }
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
         };
         finalheaderbg.setTag(headerBgTarget);
 
@@ -227,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userService.getCurrentUser().enqueue(new Callback<User>() {
             @Override
             public void onResponse(Response<User> response) {
-                if(!response.isSuccess()){
+                if (!response.isSuccess()) {
                     Snackbar.make(frameLayout, "Error: " + response.errorBody().toString(), Snackbar.LENGTH_LONG).show();
                     return;
                 }
@@ -244,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void setupFragments(){
+    private void setupFragments() {
         timelineFragment = new TimelineFragment();
         profileFragment = new ProfileFragment();
         aboutFragment = new AboutFragment();
@@ -256,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().getItem(1).setChecked(true);
     }
 
-    private void setupNavigationMenu(){
+    private void setupNavigationMenu() {
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -298,15 +313,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mSearchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_search:
+                toggleMenuSearch();
+                return true;
+            case R.id.action_settings:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleMenuSearch() {
+        final ActionBar actionbar = getSupportActionBar();
+
+        if (searchOpened && actionbar != null) {
+            actionbar.setDisplayShowCustomEnabled(false);
+            actionbar.setDisplayShowTitleEnabled(true);
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            View focusedView = getCurrentFocus();
+            if(focusedView != null) imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search, getTheme()));
+
+            searchOpened = false;
+        } else if (!searchOpened && actionbar != null) {
+            actionbar.setDisplayShowCustomEnabled(true);
+            actionbar.setCustomView(R.layout.searchbar);
+            actionbar.setDisplayShowTitleEnabled(false);
+
+            editSearch = (EditText) actionbar.getCustomView().findViewById(R.id.edit_search);
+            editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
+                        toggleMenuSearch();
+                        searchTweets(v.getText().toString());
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            editSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    String result = editable.toString().replaceAll(" ", "");
+                    if (!result.equals(editable.toString())) {
+                        editSearch.setText(result);
+                        editSearch.setSelection(result.length());
+                    }
+                }
+            });
+            editSearch.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
+
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_close_white, getTheme()));
+
+            searchOpened = true;
+        }
+    }
+
+    private void searchTweets(String query) {
+        Intent intent = new Intent(this, HashtagActivity.class);
+        intent.putExtra("hashtag", query);
+        startActivity(intent);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -316,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = timelineFragment;
-        switch(id){
+        switch (id) {
             case R.id.nav_profile:
                 profileFragment.setUserId(application.getCurrentUser().getId());
                 fragment = profileFragment;

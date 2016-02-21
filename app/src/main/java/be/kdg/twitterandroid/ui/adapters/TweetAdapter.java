@@ -25,7 +25,7 @@ import be.kdg.twitterandroid.ui.activities.listeners.TweetInteractionListener;
 import be.kdg.twitterandroid.domain.Entities;
 import be.kdg.twitterandroid.domain.Tweet;
 import be.kdg.twitterandroid.domain.User;
-import be.kdg.twitterandroid.utils.DateHelper;
+import be.kdg.twitterandroid.utils.DateUtils;
 import be.kdg.twitterandroid.utils.StringUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -161,7 +161,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
         }
         tweetView.tweetBody.setMovementMethod(LinkMovementMethod.getInstance());
         tweetView.tweetBody.setText(tweetBody);
-        tweetView.tweetTimestamp.setText(DateHelper.getSimpleDateString(tweet.getCreated_at()));
+        tweetView.tweetTimestamp.setText(DateUtils.getSimpleDateString(tweet.getCreated_at()));
 
         if(tweet.getRetweet_count() > 0){
             tweetView.tweetRetweetCount.setText(String.valueOf(tweet.getRetweet_count()));

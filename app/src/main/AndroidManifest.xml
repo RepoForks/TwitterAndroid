@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".ui.activities.TwitterAuthActivity" />
         <activity android:name=".ui.activities.ProfileActivity" />
-        <activity android:name=".ui.activities.HashtagActivity"></activity>
+        <activity android:name=".ui.activities.HashtagActivity" />
     </application>
 
 </manifest>
